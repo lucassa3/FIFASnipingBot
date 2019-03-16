@@ -30,7 +30,7 @@ d.get("https://www.easports.com/br/fifa/ultimate-team/web-app/#")
 quality="Ouro"
 position=""
 nation=""
-league="LaLiga"
+league="Premier"
 chem_style=""
 max_price=350
 min_price=300
@@ -43,7 +43,7 @@ price_range = ((max_price - 150)/50) - 1
 
 login(d, "credentials.txt")
 retry_cmd(goto_transfers, 1, 0, d)
-retry_cmd(get_tradepile_size, 1, 0, d)
+
 
 retry_cmd(goto_tradepile, 0, 0, d)
 retry_cmd(remove_sold, 1, 3, d)
@@ -52,6 +52,7 @@ sell_tradepile_players(d)
 
 print(tradepile_cur_size)
 retry_cmd(goto_transfers, 0, 0, d)
+tradepile_cur_size = retry_cmd(get_tradepile_size, 1, 0, d)
 retry_cmd(goto_transfer_search, 0, 0, d)
 
 select_search_filters(d, quality=quality, position=position, nation=nation, 
@@ -80,8 +81,8 @@ while tradepile_cur_size < tradepile_capacity-1:
     counter += 1
     print(tradepile_cur_size)
     if counter != 0 and counter % 60 == 0:
-        print("Estou dormindo por 60 segundos")
-        time.sleep(60)
+        print("Estou dormindo por 15 segundos")
+        time.sleep(15)
 
 time.sleep(0.5)
-logout()
+logout(d)

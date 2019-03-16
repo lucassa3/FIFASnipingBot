@@ -45,6 +45,7 @@ def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
     except Exception as e:
+        # print(e)
         return "exception"
     else:
         if res != None:
@@ -130,11 +131,10 @@ def goto_transfers(d):
 
         
 def get_tradepile_size(d):
-    global tradepile_cur_size
     size = d.find_element_by_class_name("ut-tile-transfer-list")\
     .find_element_by_class_name("total-transfers")\
     .find_element_by_class_name("value").text
-    tradepile_cur_size = int(size)
+    return int(size)
 
 
 def goto_transfer_search(d):
@@ -172,6 +172,7 @@ def sell_item(d):
     retry_cmd(find_click_back_btn, 0.1, 0, d)
     retry_cmd(find_click_list_btn, 0.1, 0, d)
     wait_loading(d)
+    time.sleep(0.2)
 
     #escreve preco min: 9000000 (default)
     init_price_box = d.find_element_by_class_name("ui-layout-right")\
@@ -180,10 +181,10 @@ def sell_item(d):
     .find_element_by_xpath("..")\
     .find_element_by_class_name("numericInput")
     time.sleep(0.15)
-    init_price_box.send_keys(Keys.CONTROL + "a")
-    init_price_box.send_keys(Keys.DELETE)
-    time.sleep(0.3)
-    init_price_box.send_keys("9000000")
+    retry_cmd(init_price_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
+    retry_cmd(init_price_box.send_keys, 0.02, 0, Keys.DELETE)
+    time.sleep(0.2)
+    retry_cmd(init_price_box.send_keys, 0.02, 0, "9000000")
 
     #escreve preco venda: min_price
     imm_price_box = d.find_element_by_class_name("ui-layout-right")\
@@ -192,10 +193,10 @@ def sell_item(d):
     .find_element_by_xpath("..")\
     .find_element_by_class_name("numericInput")
     time.sleep(0.15)
-    imm_price_box.send_keys(Keys.CONTROL + "a")
-    imm_price_box.send_keys(Keys.DELETE)
-    time.sleep(0.3)
-    imm_price_box.send_keys(str(sell_price))
+    retry_cmd(imm_price_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
+    retry_cmd(imm_price_box.send_keys, 0.02, 0, Keys.DELETE)
+    time.sleep(0.2)
+    retry_cmd(imm_price_box.send_keys, 0.02, 0, str(sell_price))
 
     list_btn = d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_xpath(".//*[contains(text(), 'Listar item') and not(contains(text(), 'novamente'))]")
