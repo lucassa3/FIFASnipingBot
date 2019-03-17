@@ -21,7 +21,7 @@ tradepile_cur_size = 0
 
 options = webdriver.ChromeOptions()
 options.add_argument("user-data-dir=profile/")
-d = webdriver.Chrome("C:/Users/lucas/Downloads/chromedriver.exe", chrome_options=options)
+d = webdriver.Chrome("chromedriver.exe", chrome_options=options)
 
 d.set_page_load_timeout("10")
 d.get("https://www.easports.com/br/fifa/ultimate-team/web-app/#")
@@ -32,11 +32,11 @@ position=""
 nation=""
 league="Premier"
 chem_style=""
-max_price=350
-min_price=300
+max_price=400
+min_price=350
 
 swap_basic_chem = 5
-swap_pos_def = 0
+swap_pos_def = 10
 inc_swap_pos = True
 ####################
 price_range = ((max_price - 150)/50) - 1

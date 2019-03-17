@@ -55,6 +55,7 @@ def try_cmd(cmd, *args):
 def find_click_login_btn(d):
     btn = d.find_elements_by_class_name("call-to-action")
     if len(btn) > 0:
+        print(btn[0].get_attribute("class"))
         if "disabled" not in btn[0].get_attribute("class"):
             btn[0].click()
             return "clicked_btn"
@@ -94,6 +95,7 @@ def login(d, credentials):
             state = is_loading
 
         time.sleep(1)
+
 
     if state == "clicked_btn": #it means i needed to click
         state = None
