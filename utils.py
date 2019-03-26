@@ -275,6 +275,18 @@ def find_textbox_filter(d, filter_name=""):
     .find_element_by_class_name("numericInput")
     return fil
 
+def find_playername_filter(d):
+    fil = d.find_element_by_xpath("//input[@placeholder='Digite o Nome do Jogador']")
+    return fil
+
+def select_playername_filter(d, name):
+    fil = retry_cmd(find_playername_filter, 0.02, 0, d)
+    fil.send_keys(name)
+    time.sleep(0.7)
+    d.find_element_by_xpath(f"//*[contains(text(), '{name}')]").click()
+
+
+
 
 def cancel_filter(d, filter_name=""):
     d.find_element_by_xpath(f"//*[contains(text(), '{filter_name}')]")\
@@ -339,6 +351,9 @@ def select_search_filters(d, quality="", chem_style="", league="", position="", 
                           inc_min_price=False, dec_min_price=False, cancel_filters_list=[], force_non_submit=False):
     if quality != "":
         select_filter(d, "Qualidade", quality)
+
+    if player_name != "":
+        select_playername_filter(d, player_name)
 
     if chem_style != "":
         select_filter(d, "Estilos Entrosam.", chem_style)
@@ -502,7 +517,7 @@ def has_already_bought(d):
     .find_element_by_class_name("negative")
 
 
-def buy_card(d):
+def buy_card(d, sell=True):
     res = retry_cmds([find_buy_btn, find_no_results], 0, 0, [[d], [d]])
     if res == "find_buy_btn":
         idx = retry_cmd(select_buy_card, 0, 0, d)
@@ -521,9 +536,12 @@ def buy_card(d):
                 return None
             bought_price = int(d.find_element_by_class_name("subContent").text.replace(".", ""))
             time.sleep(0.5)
-            sold_price = sell_item(d)
-            time.sleep(0.5)
-            return (bought_price, sold_price)
+            if sell:
+                sold_price = sell_item(d)
+                time.sleep(0.5)
+                return (bought_price, sold_price)
+            else:
+                return (bought_price, 0)
 
     elif res == "find_no_results":
         wait_loading(d, 0)
