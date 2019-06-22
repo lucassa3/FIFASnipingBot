@@ -2,20 +2,6 @@ import time
 import random
 from selenium.webdriver.common.keys import Keys
 
-
-current_filters = { 
-                    "Qualidade" : None,
-                    "Estilos Entrosam." : None,
-                    "Liga" : None,
-                    "Posição" : None,
-                    "Nacionalidade" : None,
-                    "Clube" : None,
-                    "Mín.:" : None,
-                    "Máx.:" : None
-                    }
-
-inc_flag = False
-
 def retry_cmd(cmd, sleep, timeout, *args):
     success = False
     start = time.time()
@@ -30,7 +16,6 @@ def retry_cmd(cmd, sleep, timeout, *args):
             return res
         time.sleep(sleep)
 
-
 def retry_cmds(cmds, sleep, timeout, args_list):
     success = False
     while not success:
@@ -39,7 +24,6 @@ def retry_cmds(cmds, sleep, timeout, args_list):
             if res != "exception":
                 return res
         time.sleep(sleep)
-
 
 def try_cmd(cmd, *args):
     try:
@@ -55,7 +39,6 @@ def try_cmd(cmd, *args):
 def find_click_login_btn(d):
     btn = d.find_elements_by_class_name("call-to-action")
     if len(btn) > 0:
-        print(btn[0].get_attribute("class"))
         if "disabled" not in btn[0].get_attribute("class"):
             btn[0].click()
             return "clicked_btn"
@@ -72,15 +55,12 @@ def check_if_loading(d):
             return False
     return False
 
-
 def find_login_form(d):
     elem = d.find_elements_by_id("email")
     if len(elem) > 0:
         return "found_login"
     else:
         return False
-
-
 
 def login(d, credentials):
     #check whether its already logged in or needs to click the btn
@@ -117,7 +97,6 @@ def login(d, credentials):
 
             time.sleep(1)
 
-
 def logout(d):
     wait_loading(d, 1)
     d.find_element_by_class_name("icon-settings").click()
@@ -127,10 +106,8 @@ def logout(d):
     time.sleep(1)
     d.find_elements_by_xpath("//*[contains(text(), 'Desconectar')]")[1].click()
 
-
 def goto_transfers(d):
     d.find_element_by_class_name("icon-transfer").click()
-
         
 def get_tradepile_size(d):
     size = d.find_element_by_class_name("ut-tile-transfer-list")\
@@ -138,33 +115,27 @@ def get_tradepile_size(d):
     .find_element_by_class_name("value").text
     return int(size)
 
-
 def goto_transfer_search(d):
     d.find_elements_by_class_name("col-1-1")[1].click()
 
-
 def goto_tradepile(d):
     d.find_element_by_class_name("ut-tile-transfer-list").click()
-
 
 def find_click_list_btn(d):
     list_btn_temp = d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("QuickListPanel")\
     .find_element_by_class_name("accordian").click()
 
-
 def find_click_cmp_btn(d):
     compare_btn = d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_xpath(".//*[contains(text(), 'Comparar')]")\
     .find_element_by_xpath("..").click()
-
 
 def find_click_back_btn(d):
     back_btn = d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_xpath(".//*[contains(text(), 'Resultados da Busca')]")\
     .find_element_by_xpath("..")\
     .find_element_by_class_name("btn-navigation").click()
-
 
 def sell_item(d):
     retry_cmd(find_click_cmp_btn, 0.1, 0, d)
@@ -211,7 +182,6 @@ def remove_sold(d):
     .find_element_by_xpath('..')\
     .find_element_by_class_name("call-to-action").click()
 
-
 def get_expired_cards(d):
     expired_cards = d.find_element_by_id("TradePile")\
     .find_element_by_xpath(".//*[contains(text(), 'Itens não vend.')]")\
@@ -222,7 +192,6 @@ def get_expired_cards(d):
 
     return expired_cards
 
-
 def get_available_cards(d):
     expired_cards = d.find_element_by_id("TradePile")\
     .find_element_by_xpath(".//*[contains(text(), 'Itens disponíveis')]")\
@@ -232,7 +201,6 @@ def get_available_cards(d):
     .find_elements_by_class_name("listFUTItem")
 
     return expired_cards
-
 
 def sell_tradepile_players(d):
     expired_cards = retry_cmd(get_expired_cards, 0.5, 0, d)
@@ -261,12 +229,10 @@ def sell_tradepile_players(d):
             next_available_cards_len = len(next_available_cards)
         available_cards = next_available_cards
 
-
 def find_click_filter(d, filter_name=""):
     d.find_element_by_xpath(f"//*[contains(text(), '{filter_name}')]")\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..').click()
-
 
 def find_textbox_filter(d, filter_name=""):
     fil = d.find_elements_by_xpath(f"//*[contains(text(), '{filter_name}')]")[1]\
@@ -285,14 +251,18 @@ def select_playername_filter(d, name):
     time.sleep(0.7)
     d.find_element_by_xpath(f"//*[contains(text(), '{name}')]").click()
 
+def get_max_price_textbox(d):
+    fil = retry_cmd(find_textbox_filter, 0.02, 0, d, "Máx.:").get_attribute("value")
+    return int(fil) if fil != '' else 0
 
-
+def get_min_price_textbox(d):
+    fil = retry_cmd(find_textbox_filter, 0.02, 0, d, "Mín.:").get_attribute("value")
+    return int(fil) if fil != '' else 0
 
 def cancel_filter(d, filter_name=""):
     d.find_element_by_xpath(f"//*[contains(text(), '{filter_name}')]")\
     .find_element_by_xpath('..')\
     .find_element_by_class_name("flat").click()
-
 
 def select_filter(d, filter_name="", value=""):
     global current_filters
@@ -300,13 +270,11 @@ def select_filter(d, filter_name="", value=""):
     retry_cmd(d.find_element_by_xpath(f"//*[contains(text(), '{value}')]").click, 0.02, 0)
     current_filters[filter_name] = value
 
-
 def select_textbox_filter(d, filter_name="", value=""):
     global current_filters
     fil = retry_cmd(find_textbox_filter, 0.02, 0, d, filter_name)
     retry_cmd(fil.send_keys, 0.02, 0, str(value))
     current_filters[filter_name] = value
-
 
 def find_click_inc_min_price(d):
     d.find_elements_by_xpath("//*[contains(text(), 'Mín.:')]")[1]\
@@ -314,13 +282,11 @@ def find_click_inc_min_price(d):
     .find_element_by_xpath('..')\
     .find_element_by_class_name("increment-value").click()
 
-
 def find_click_dec_min_price(d):
     d.find_elements_by_xpath("//*[contains(text(), 'Mín.:')]")[1]\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..')\
     .find_element_by_class_name("decrement-value").click()
-
 
 def find_click_inc_max_price(d):
     d.find_elements_by_xpath("//*[contains(text(), 'Máx.:')]")[1]\
@@ -328,81 +294,18 @@ def find_click_inc_max_price(d):
     .find_element_by_xpath('..')\
     .find_element_by_class_name("increment-value").click()
 
-
 def find_click_dec_max_price(d):
     d.find_elements_by_xpath("//*[contains(text(), 'Máx.:')]")[1]\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..')\
     .find_element_by_class_name("decrement-value").click()
 
-
-def cancel_filters(d, cancel_filters_list=[]):
-    global current_filters
-    for f in cancel_filters_list:
-        if current_filters[f] != None:
-            retry_cmd(cancel_filter, 0.02, 0, d, current_filters[f])
-            current_filters[f] = None
-        else:
-            raise ValueError(f"Cant cancel {f} since there is no filter selected")
-
-
-def select_search_filters(d, quality="", chem_style="", league="", position="", nation="", club="", 
-                          player_name="", min_price=0, max_price=0, inc_max_price=False, dec_max_price=False, 
-                          inc_min_price=False, dec_min_price=False, cancel_filters_list=[], force_non_submit=False):
-    if quality != "":
-        select_filter(d, "Qualidade", quality)
-
-    if player_name != "":
-        select_playername_filter(d, player_name)
-
-    if chem_style != "":
-        select_filter(d, "Estilos Entrosam.", chem_style)
-
-    if league != "":
-        select_filter(d, "Liga", league)
-
-    if position != "":
-        select_filter(d, "Posição", position)
-
-    if nation != "":
-        select_filter(d, "Nacionalidade", nation)
-
-    if club != "":
-        select_filter(d, "Clube", club)
-
-    if max_price != 0:
-        select_textbox_filter(d, "Máx.:", max_price)
-
-    if min_price != 0:
-        select_textbox_filter(d, "Mín.:", min_price)
-
-    if cancel_filters:
-        cancel_filters(d, cancel_filters_list) 
-
-    if inc_min_price:
-        retry_cmd(find_click_inc_min_price, 0.02, 0, d)
-        
-    if dec_min_price:
-        retry_cmd(find_click_dec_min_price, 0.02, 0, d)
-        
-    if inc_max_price:
-        retry_cmd(find_click_inc_max_price, 0.02, 0, d)
-
-    if dec_max_price:
-        retry_cmd(find_click_dec_max_price, 0.02, 0, d)
-
-    if not force_non_submit:
-        retry_cmd(confirm_search, 0, 0, d)
-    
-
 def confirm_search(d):
     d.find_element_by_class_name("call-to-action").click()
-
 
 def back_transfer_search(d):
     d.find_element_by_class_name("NavigationBar")\
     .find_element_by_class_name("btn-navigation").click()
-
 
 def wait_loading(d, wait_extra=0):
     ready = False
@@ -412,7 +315,6 @@ def wait_loading(d, wait_extra=0):
             ready = True
         time.sleep(0.05)
     time.sleep(wait_extra)
-
 
 def get_card_prices(d):
     price_list = []
@@ -429,12 +331,10 @@ def get_card_prices(d):
 
     return price_list
 
-
 def find_click_next_btn(d):
     next_btn = d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("paginated-item-list")\
     .find_element_by_class_name("next").click()
-
 
 def calc_interval(value):
     if value <= 1000:
@@ -443,7 +343,6 @@ def calc_interval(value):
         return 100
     else:
         return 250
-
 
 def find_lowest_price(d, num_pages=2, good_price=600):
     min_price = 9000000
@@ -467,7 +366,6 @@ def find_lowest_price(d, num_pages=2, good_price=600):
     else:
         return min_price - calc_interval(min_price)
 
-
 def check_status_buy(d, idx_sel_card):
     status = None
     while status is None:
@@ -483,21 +381,17 @@ def check_status_buy(d, idx_sel_card):
 
     return status
 
-
 def find_buy_btn(d):
     d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("buyButton")
-
 
 def find_click_buy_btn(d):
     d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("buyButton").click()
 
-
 def confirm_buy(d):
     d.find_element_by_class_name("ui-dialog-type-message")\
     .find_element_by_xpath("//*[contains(text(), 'OK')]").click()
-
 
 def select_buy_card(d):
     card_list = d.find_element_by_class_name("paginated-item-list")\
@@ -508,14 +402,12 @@ def select_buy_card(d):
     
     return card_rand_idx
 
-
 def find_no_results(d):
     d.find_element_by_class_name("no-results-screen")
 
 def has_already_bought(d):
     d.find_element_by_id("NotificationLayer")\
     .find_element_by_class_name("negative")
-
 
 def buy_card(d, sell=True):
     res = retry_cmds([find_buy_btn, find_no_results], 0, 0, [[d], [d]])
@@ -545,46 +437,13 @@ def buy_card(d, sell=True):
 
     elif res == "find_no_results":
         wait_loading(d, 0)
-        return None
+        return 
 
-
-def update_filter(d, price_range, counter, swap_basic_chem=0, swap_pos_def=0, inc_swap_pos=False):
-    global inc_flag
-    inc_min_price = False
-    dec_min_price = False
-    chem_style = ""
-    position = ""
-    cancel_filters_list = []
-
-    if price_range > 1:
-        if counter != 0 and counter % price_range == 0:
-            inc_flag = not inc_flag
-        
-        if inc_flag:
-            inc_min_price = True
-            dec_min_price = False
-        else:
-            inc_min_price = False
-            dec_min_price = True
-
-    if swap_basic_chem != 0:
-        if counter != 0 and counter % swap_basic_chem == 0:
-            if current_filters["Estilos Entrosam."] is None:
-                chem_style = "BÁSICO"
-            else:
-                cancel_filters_list.append("Estilos Entrosam.")
-
-    if swap_pos_def != 0:
-        if counter != 0 and counter % swap_pos_def == 0:
-            if current_filters["Posição"] is None:
-                position = "Defensores"
-                if inc_swap_pos:
-                    select_search_filters(d, inc_max_price=True, force_non_submit=True)
-            else:
-                cancel_filters_list.append("Posição")
-                if inc_swap_pos:
-                    select_search_filters(d, dec_max_price=True, force_non_submit=True)
-
-    select_search_filters(d, dec_min_price=dec_min_price, inc_min_price=inc_min_price, 
-                          chem_style=chem_style, position=position, 
-                          cancel_filters_list=cancel_filters_list)
+def increase_min_imm(value, desired_min, desired_max, increase):
+    '''
+    True if min immediate value needs to be increased... else False
+    '''
+    if value == desired_min:
+        increase = True
+    elif value == desired_max - calc_interval(value):
+        increase = False
