@@ -1,11 +1,15 @@
 import time
 import random
 from selenium.webdriver.common.keys import Keys
+from program_state import ProgramState
 
 def retry_cmd(cmd, sleep, timeout, *args):
     success = False
     start = time.time()
     while not success:
+        if ProgramState.stop_thread_flag:
+            raise ValueError("Finalizando Thread")
+            
         if timeout > 0:
             elapsed = time.time()
             if elapsed - start > timeout:
@@ -265,16 +269,12 @@ def cancel_filter(d, filter_name=""):
     .find_element_by_class_name("flat").click()
 
 def select_filter(d, filter_name="", value=""):
-    global current_filters
     fil = retry_cmd(find_click_filter, 0.02, 0, d, filter_name)
     retry_cmd(d.find_element_by_xpath(f"//*[contains(text(), '{value}')]").click, 0.02, 0)
-    current_filters[filter_name] = value
 
 def select_textbox_filter(d, filter_name="", value=""):
-    global current_filters
     fil = retry_cmd(find_textbox_filter, 0.02, 0, d, filter_name)
     retry_cmd(fil.send_keys, 0.02, 0, str(value))
-    current_filters[filter_name] = value
 
 def find_click_inc_min_price(d):
     d.find_elements_by_xpath("//*[contains(text(), 'Mín.:')]")[1]\
