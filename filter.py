@@ -28,6 +28,9 @@ class Filter():
                     if key in self.textbox_fields:
                         if kwargs[key][1]:
                             select_textbox_filter(d, kwargs[key][0], kwargs[key][1])
+                    elif key == "name":
+                        if kwargs[key][1]:
+                            input_name(d, kwargs[key][1])
                     else:
                         if kwargs[key][1]:
 

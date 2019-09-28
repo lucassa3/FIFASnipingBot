@@ -7,6 +7,7 @@ def retry_cmd(cmd, sleep, timeout, *args):
     success = False
     start = time.time()
     while not success:
+        print(cmd.__name__)
         if ProgramState.stop_thread_flag:
             raise ValueError("Finalizando Thread")
             
@@ -44,15 +45,16 @@ def find_click_login_btn(d):
     btn = d.find_elements_by_class_name("call-to-action")
     if len(btn) > 0:
         if "disabled" not in btn[0].get_attribute("class"):
-            btn[0].click()
+            retry_cmd(btn[0].click, 0.1, 2)
             return "clicked_btn"
         else:
             return False
     return False
 
 def check_if_loading(d):
-    loading = d.find_elements_by_id("ClickShield")
+    loading = d.find_elements_by_class_name("loaderIcon")
     if len(loading) > 0:
+        print(loading[0].get_attribute("class"))
         if loading[0].get_attribute("style") == "":
             return "is_loading"
         else:
@@ -94,6 +96,8 @@ def login(d, credentials):
                     if email.get_attribute('value') == '':
                         email.send_keys(cr[0])
                     password.send_keys(cr[1])
+                
+                d.find_element_by_id("btnLogin").click()
             
             is_loading = check_if_loading(d)
             if is_loading:
@@ -127,7 +131,7 @@ def goto_tradepile(d):
 
 def find_click_list_btn(d):
     list_btn_temp = d.find_element_by_class_name("ui-layout-right")\
-    .find_element_by_class_name("QuickListPanel")\
+    .find_element_by_class_name("ut-quick-list-panel-view")\
     .find_element_by_class_name("accordian").click()
 
 def find_click_cmp_btn(d):
@@ -139,7 +143,7 @@ def find_click_back_btn(d):
     back_btn = d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_xpath(".//*[contains(text(), 'Resultados da Busca')]")\
     .find_element_by_xpath("..")\
-    .find_element_by_class_name("btn-navigation").click()
+    .find_element_by_class_name("ut-navigation-button-control").click()
 
 def sell_item(d):
     retry_cmd(find_click_cmp_btn, 0.1, 0, d)
@@ -187,8 +191,7 @@ def remove_sold(d):
     .find_element_by_class_name("call-to-action").click()
 
 def get_expired_cards(d):
-    expired_cards = d.find_element_by_id("TradePile")\
-    .find_element_by_xpath(".//*[contains(text(), 'Itens não vend.')]")\
+    expired_cards = d.find_element_by_xpath("//*[contains(text(), 'Itens não vend.')]")\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..')\
     .find_element_by_class_name("itemList")\
@@ -197,14 +200,13 @@ def get_expired_cards(d):
     return expired_cards
 
 def get_available_cards(d):
-    expired_cards = d.find_element_by_id("TradePile")\
-    .find_element_by_xpath(".//*[contains(text(), 'Itens disponíveis')]")\
+    available_cards = d.find_element_by_xpath("//*[contains(text(), 'Itens disponíveis')]")\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..')\
     .find_element_by_class_name("itemList")\
     .find_elements_by_class_name("listFUTItem")
 
-    return expired_cards
+    return available_cards
 
 def sell_tradepile_players(d):
     expired_cards = retry_cmd(get_expired_cards, 0.5, 0, d)
@@ -257,11 +259,11 @@ def select_playername_filter(d, name):
 
 def get_max_price_textbox(d):
     fil = retry_cmd(find_textbox_filter, 0.02, 0, d, "Máx.:").get_attribute("value")
-    return int(fil) if fil != '' else 0
+    return int(fil.replace('.', '')) if fil != '' else 0
 
 def get_min_price_textbox(d):
     fil = retry_cmd(find_textbox_filter, 0.02, 0, d, "Mín.:").get_attribute("value")
-    return int(fil) if fil != '' else 0
+    return int(fil.replace('.', '')) if fil != '' else 0
 
 def cancel_filter(d, filter_name=""):
     d.find_element_by_xpath(f"//*[contains(text(), '{filter_name}')]")\
@@ -304,13 +306,13 @@ def confirm_search(d):
     d.find_element_by_class_name("call-to-action").click()
 
 def back_transfer_search(d):
-    d.find_element_by_class_name("NavigationBar")\
-    .find_element_by_class_name("btn-navigation").click()
+    d.find_element_by_class_name("ut-navigation-bar-view")\
+    .find_element_by_class_name("ut-navigation-button-control").click()
 
 def wait_loading(d, wait_extra=0):
     ready = False
     while not ready:
-        loading = d.find_element_by_id("ClickShield").get_attribute("style")
+        loading = d.find_element_by_class_name("loaderIcon").get_attribute("style")
         if loading != "":
             ready = True
         time.sleep(0.05)
@@ -324,7 +326,7 @@ def get_card_prices(d):
 
     for card in card_list:
         price = card.find_element_by_xpath("..")\
-        .find_element_by_class_name("coins").text
+        .find_element_by_class_name("currency-coins").text
 
         price = int(str(price).replace(".", ""))
         price_list.append(price)
@@ -332,7 +334,7 @@ def get_card_prices(d):
     return price_list
 
 def find_click_next_btn(d):
-    next_btn = d.find_element_by_class_name("ui-layout-right")\
+    d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("paginated-item-list")\
     .find_element_by_class_name("next").click()
 
@@ -355,9 +357,6 @@ def find_lowest_price(d, num_pages=2, good_price=600):
                 min_price = price
 
         if i != num_pages - 1:
-            next_btn = d.find_element_by_class_name("ui-layout-right")\
-            .find_element_by_class_name("paginated-item-list")\
-            .find_element_by_class_name("next")
             if retry_cmd(find_click_next_btn, 0.2, 3, d) == "timeout":
                 break
 
@@ -390,7 +389,8 @@ def find_click_buy_btn(d):
     .find_element_by_class_name("buyButton").click()
 
 def confirm_buy(d):
-    d.find_element_by_class_name("ui-dialog-type-message")\
+    d.find_element_by_class_name("dialog-body")\
+    .find_element_by_xpath("..")\
     .find_element_by_xpath("//*[contains(text(), 'OK')]").click()
 
 def select_buy_card(d):
@@ -403,11 +403,33 @@ def select_buy_card(d):
     return card_rand_idx
 
 def find_no_results(d):
-    d.find_element_by_class_name("no-results-screen")
+    d.find_element_by_class_name("ut-no-results-view")
 
 def has_already_bought(d):
     d.find_element_by_id("NotificationLayer")\
     .find_element_by_class_name("negative")
+
+def input_name(d, player_name):
+    player_name_box = d.find_element_by_class_name("ut-player-search-control")\
+        .find_element_by_xpath(".//*[@placeholder='Digite o Nome do Jogador']")
+
+    
+
+    retry_cmd(player_name_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
+    retry_cmd(player_name_box.send_keys, 0.02, 0, Keys.DELETE)
+
+    retry_cmd(player_name_box.send_keys, 0.02, 0, player_name)
+
+    click_name_btn = retry_cmd(find_player_name_btn, 0.02, 0, d)
+
+    retry_cmd(click_name_btn.click, 0.02, 0)
+
+def find_player_name_btn(d):
+    return d.find_element_by_class_name("ut-player-search-control")\
+        .find_element_by_class_name("inline-list")\
+        .find_elements_by_class_name("btn-text")[0]\
+        .find_element_by_xpath("..")
+
 
 def buy_card(d, sell=True):
     res = retry_cmds([find_buy_btn, find_no_results], 0, 0, [[d], [d]])

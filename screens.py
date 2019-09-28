@@ -1,6 +1,5 @@
 import routines as routines
 import tkinter as tk
-
 class ScreenController(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -100,6 +99,9 @@ class SnipeFormComponent(tk.Frame):
         self.max_price = tk.Entry(self)
         self.max_price.grid(row = 4, column = 3)
 
+        tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(row = 9, column = 2, columnspan=2, pady=20)
+                
+                
         # self.pmp = 0
         # self.pos_mod_price = tk.Checkbutton(self, text="Position modifies price?", variable=self.pmp)
         # self.pos_mod_price.grid(row = 5,column = 2, columnspan=2, padx=30)
@@ -120,6 +122,7 @@ class SnipeFormComponent(tk.Frame):
                     **{
                         "alt_positions" : int(self.alt_positions.get()) if self.alt_positions.get() else 0, 
                         "alt_chem_styles" : int(self.alt_chem_styles.get()) if self.alt_chem_styles.get() else 0,
+                        "name" : self.name.get(),
                         # "pos_mod_price" : self.pmp,
                         "quality" : self.quality.get(),
                         "chem_style" : self.chem_style.get(),
@@ -130,7 +133,7 @@ class SnipeFormComponent(tk.Frame):
                         "max_price" : int(self.max_price.get()) if self.max_price.get() else 0
                     }
                 )
-            ).grid(row = 9, column = 0, columnspan=4, pady=20)
+            ).grid(row = 9, column = 0, columnspan=2, pady=20)
 
         else:
             tk.Button(
@@ -141,6 +144,7 @@ class SnipeFormComponent(tk.Frame):
                     **{
                         "alt_positions" : int(self.alt_positions.get()) if self.alt_positions.get() else 0, 
                         "alt_chem_styles" : int(self.alt_chem_styles.get()) if self.alt_chem_styles.get() else 0,
+                        "name" : self.name.get(),
                         # "pos_mod_price" : self.pmp,
                         "quality" : self.quality.get(),
                         "chem_style" : self.chem_style.get(),

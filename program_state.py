@@ -9,10 +9,12 @@ class ProgramState():
 	active_thread = None
 	stop_thread_flag = False
 
+	@staticmethod
 	def init_resources():
 		ProgramState.selenium_instance = SeleniumSession("https://www.easports.com/br/fifa/ultimate-team/web-app/#")
 		ProgramState.screen_controller = ScreenController()
 
+	@staticmethod
 	def stop_thread():
 		if ProgramState.active_thread:
 			ProgramState.stop_thread_flag = True
@@ -27,7 +29,8 @@ class ProgramState():
 			ProgramState.active_thread.join()
 			print(f"dei join na thread")
 			ProgramState.stop_thread_flag = False
-
+	
+	@staticmethod
 	def switch_thread(func_name, kwargs={}):
 		ProgramState.stop_thread()
 		ProgramState.active_thread = threading.Thread(target=func_name, kwargs=kwargs)
