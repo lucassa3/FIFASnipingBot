@@ -29,12 +29,81 @@ class NavBarComponent(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         tk.Button(self, text="Sell Tradepile",
-                  command=lambda: master.master.switch_frame("sell_screen")).grid(row = 0,column = 0)
+                  command=lambda: master.switch_frame("sell_screen")).grid(row = 0,column = 0)
         tk.Button(self, text="Snipe Players",
-                  command=lambda: master.master.switch_frame("snipe_screen")).grid(row = 0,column = 1)
+                  command=lambda: master.switch_frame("snipe_screen")).grid(row = 0,column = 1)
         tk.Button(self, text="Full Routine",
-                  command=lambda: master.master.switch_frame("full_routine")).grid(row = 0,column = 2)
+                  command=lambda: master.switch_frame("full_routine")).grid(row = 0,column = 2)
 
+class StartStopComponent(tk.Frame):
+    def __init__(self, master, full_routine=False, start_button_label="Start", stop_button_label="Stop"):
+        tk.Frame.__init__(self, master)
+
+        if full_routine:
+            tk.Button(
+                self, 
+                text="Sell and " + start_button_label,
+                fg="#48c732",
+                command=lambda: routines.async_full_routine(**{
+                    "alt_positions" : int(master.alt_positions.get()) if master.alt_positions.get() else 0, 
+                    "alt_chem_styles" : int(master.alt_chem_styles.get()) if master.alt_chem_styles.get() else 0,
+                    "name" : master.name.get(),
+                    "quality" : master.quality.get(),
+                    "chem_style" : master.chem_style.get(),
+                    "league" : master.league.get(),
+                    "position" : master.position.get(),
+                    "nation" : master.nation.get(),
+                    "club" : master.club.get(),
+                    "max_price" : int(master.max_price.get()) if master.max_price.get() else 0
+                })
+            ).grid(row = 0,column = 0)
+        else:
+            tk.Button(
+                self, 
+                text=start_button_label,
+                fg="#48c732",
+                command=lambda: routines.async_snipe(**{
+                    "alt_positions" : int(master.alt_positions.get()) if master.alt_positions.get() else 0, 
+                    "alt_chem_styles" : int(master.alt_chem_styles.get()) if master.alt_chem_styles.get() else 0,
+                    "name" : master.name.get(),
+                    "quality" : master.quality.get(),
+                    "chem_style" : master.chem_style.get(),
+                    "league" : master.league.get(),
+                    "position" : master.position.get(),
+                    "nation" : master.nation.get(),
+                    "club" : master.club.get(),
+                    "max_price" : int(master.max_price.get()) if master.max_price.get() else 0
+                })
+            ).grid(row = 0,column = 0)
+
+        tk.Button(
+            self, 
+            text=stop_button_label,
+            fg="#de190b",
+            command=routines.stop_program
+        ).grid(row = 0,column = 1)
+
+
+# class StartStopConsumableComponent(tk.Frame):
+#     def __init__(self, master, full_routine=False, start_button_label="Start", stop_button_label="Stop"):
+#         tk.Frame.__init__(self, master)
+
+#         tk.Button(
+#             self, 
+#             text=start_button_label,
+#             fg="#48c732",
+#             command=lambda: routines.async_full_routine(**{
+#                 "consumable_type" : master.name.get(), 
+#                 "chem_type" : master.name.get(),
+#             })
+#         ).grid(row = 0,column = 0)
+
+#         tk.Button(
+#             self, 
+#             text=stop_button_label,
+#             fg="#de190b",
+#             command=routines.stop_program
+#         ).grid(row = 0,column = 1)
 
 class SellComponent(tk.Frame):
     def __init__(self, master):
@@ -99,77 +168,64 @@ class SnipeFormComponent(tk.Frame):
         self.max_price = tk.Entry(self)
         self.max_price.grid(row = 4, column = 3)
 
-        tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(row = 9, column = 2, columnspan=2, pady=20)
-                
-                
-        # self.pmp = 0
-        # self.pos_mod_price = tk.Checkbutton(self, text="Position modifies price?", variable=self.pmp)
-        # self.pos_mod_price.grid(row = 5,column = 2, columnspan=2, padx=30)
-
+        if full_routine_form:
+            StartStopComponent(self, full_routine=True).grid(row = 9, column = 0, columnspan=4, pady=20)
+        else:
+            StartStopComponent(self, full_routine=False).grid(row = 9, column = 0, columnspan=4, pady=20)
 
         tk.Label(self, text="Status:").grid(row = 10, column = 0)
-        self.lbl_total_players = tk.Label(self, text="Total Players Bought:")
-        self.lbl_total_players.grid(row = 11, column = 0)
-        self.lbl_total_profit = tk.Label(self, text="Total Profit:")
-        self.lbl_total_profit.grid(row = 12, column = 0)
-        
-        if full_routine_form:
-            tk.Button(
-                self, 
-                text="Sell my cards and submit",
-                fg="#48c732",
-                command=lambda: routines.async_full_routine(
-                    **{
-                        "alt_positions" : int(self.alt_positions.get()) if self.alt_positions.get() else 0, 
-                        "alt_chem_styles" : int(self.alt_chem_styles.get()) if self.alt_chem_styles.get() else 0,
-                        "name" : self.name.get(),
-                        # "pos_mod_price" : self.pmp,
-                        "quality" : self.quality.get(),
-                        "chem_style" : self.chem_style.get(),
-                        "league" : self.league.get(),
-                        "position" : self.position.get(),
-                        "nation" : self.nation.get(),
-                        "club" : self.club.get(),
-                        "max_price" : int(self.max_price.get()) if self.max_price.get() else 0
-                    }
-                )
-            ).grid(row = 9, column = 0, columnspan=2, pady=20)
 
-        else:
-            tk.Button(
-                self, 
-                text="Submit",
-                fg="#48c732",
-                command=lambda: routines.async_snipe(
-                    **{
-                        "alt_positions" : int(self.alt_positions.get()) if self.alt_positions.get() else 0, 
-                        "alt_chem_styles" : int(self.alt_chem_styles.get()) if self.alt_chem_styles.get() else 0,
-                        "name" : self.name.get(),
-                        # "pos_mod_price" : self.pmp,
-                        "quality" : self.quality.get(),
-                        "chem_style" : self.chem_style.get(),
-                        "league" : self.league.get(),
-                        "position" : self.position.get(),
-                        "nation" : self.nation.get(),
-                        "club" : self.club.get(),
-                        "max_price" : int(self.max_price.get()) if self.max_price.get() else 0
-                    }
-                )
-            ).grid(row = 9, column = 0, columnspan=4, pady=20)
+        tk.Label(self, text="Total Players Bought:").grid(row = 11, column = 0)
+        tk.Label(self, text="Total Profit:").grid(row = 12, column = 0)
 
+        self.lbl_total_players = tk.Label(self, text="0", relief="groove", width=15)
+        self.lbl_total_players.grid(row = 11, column = 1)
+        self.lbl_total_profit = tk.Label(self, text="0", relief="groove", width=15)
+        self.lbl_total_profit.grid(row = 12, column = 1)
+
+# class SnipeConsumableFormComponent(tk.Frame):
+#     def __init__(self, master):
+#         tk.Frame.__init__(self, master)
+
+#         tk.Label(self, text="Item Type:").grid(row = 0, column = 0, pady=(0,35))
+#         self.consumable_type = tk.Entry(self)
+#         self.consumable_type.grid(row = 1, column = 1, pady=(0,35))
+
+
+#         tk.Label(self, text="Item:").grid(row = 0, column = 2, pady=(0,35))
+#         self.chem_type = tk.Entry(self)
+#         self.chem_type.grid(row = 3, column = 3, pady=(0,35))
+
+
+#         tk.Label(self, text="Max Price:").grid(row = 1, column = 0)
+#         self.consumable_type = tk.Entry(self)
+#         self.max_price.grid(row = 1, column = 1)
+
+
+#         StartStopConsumbaleComponent(self, full_routine=False).grid(row = 9, column = 0, columnspan=4, pady=20)
+
+#         tk.Label(self, text="Status:").grid(row = 10, column = 0)
+
+#         tk.Label(self, text="Total Cards Bought:").grid(row = 11, column = 0)
+#         tk.Label(self, text="Total Profit:").grid(row = 12, column = 0)
+
+#         self.lbl_total_players = tk.Label(self, text="0", relief="groove", width=15)
+#         self.lbl_total_players.grid(row = 11, column = 1)
+#         self.lbl_total_profit = tk.Label(self, text="0", relief="groove", width=15)
+#         self.lbl_total_profit.grid(row = 12, column = 1)
 
 class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        NavBarComponent(self).grid(row = 0, column = 0)
-        tk.Label(self, text="Welcome to this marvelous FIFA 19 Bot!").grid(row = 1,column = 0, pady=20)
+        NavBarComponent(master).grid(row = 0, column = 0)
+        tk.Label(self, text="Welcome to this marvelous FIFA 20 Bot!").grid(row = 1, column = 0, pady=20)
         tk.Label(self, text="Made with love by Lucas Astur").grid(row = 2,column = 0, pady=20)
 
 
 class SellScreen(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        NavBarComponent(self).grid(row = 0, column = 0)
+        NavBarComponent(master).grid(row = 0, column = 0)
         self.sell_component = SellComponent(self)
         self.sell_component.grid(row = 1, column = 0)
         
@@ -177,13 +233,13 @@ class SellScreen(tk.Frame):
 class SnipeScreen(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        NavBarComponent(self).grid(row = 0, column = 0)
+        NavBarComponent(master).grid(row = 0, column = 0)
         self.snipe_form_component = SnipeFormComponent(self)
         self.snipe_form_component.grid(row = 1, column = 0)
 
 class FullRoutineScreen(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        NavBarComponent(self).grid(row = 0, column = 0)
+        NavBarComponent(master).grid(row = 0, column = 0)
         self.snipe_form_component = SnipeFormComponent(self, full_routine_form=True)
         self.snipe_form_component.grid(row = 1, column = 0)

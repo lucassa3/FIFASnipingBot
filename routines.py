@@ -54,7 +54,10 @@ def snipe(
     position, 
     nation,
     club, 
-    max_price):
+    max_price,
+    # consumable_type,
+    # chem_type
+    ):
     counter = 0
     tradepile_size = 0
     max_tradepile_size = 100
@@ -75,6 +78,10 @@ def snipe(
     tradepile_size = retry_cmd(get_tradepile_size, 1, 0, ProgramState.selenium_instance.getWebDriver())
     retry_cmd(goto_transfer_search, 0, 0, ProgramState.selenium_instance.getWebDriver())
 
+    # if consumable_type:
+    #     retry_cmd(goto_consumables, 0, 0, ProgramState.selenium_instance.getWebDriver())
+
+
     search_filter.update(
         ProgramState.selenium_instance.getWebDriver(),
         name=("Name", name),
@@ -85,6 +92,8 @@ def snipe(
         nation=("Nacionalidade", nation),
         club=("Clube", club),
         max_price=("Máx.:", max_price)
+        # consumable_type=("Treino de Jogador", consumable_type),
+        # chem_type=("Estilos Entrosam.", chem_type)
     )
 
     while tradepile_size < max_tradepile_size:
@@ -97,8 +106,8 @@ def snipe(
             cards_got += 1
             total_spent += result[0]
             total_earns += result[1]*0.95
-            if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_players.configure(text=f"Total Players Bought : {str(cards_got)}")
-            if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_profit.configure(text=f"Total Profit : {str(total_earns-total_spent)}")
+            if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_players.configure(text=f"{str(cards_got)}")
+            if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_profit.configure(text=f"{str(total_earns-total_spent)}")
         
         retry_cmd(back_transfer_search, 0, 0, ProgramState.selenium_instance.getWebDriver())
         controller.manage_filter(ProgramState.selenium_instance.getWebDriver(), counter, search_filter)
