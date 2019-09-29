@@ -126,6 +126,9 @@ def get_tradepile_size(d):
 def goto_transfer_search(d):
     d.find_elements_by_class_name("col-1-1")[1].click()
 
+# def goto_consumables(d):
+#     d.find_element_by_xpath("//*[contains(text(), 'Consumíveis')]").click()
+
 def goto_tradepile(d):
     d.find_element_by_class_name("ut-tile-transfer-list").click()
 
@@ -236,12 +239,14 @@ def sell_tradepile_players(d):
         available_cards = next_available_cards
 
 def find_click_filter(d, filter_name=""):
-    d.find_element_by_xpath(f"//*[contains(text(), '{filter_name}')]")\
+    fil = d.find_element_by_class_name("ut-pinned-list")\
+    .find_element_by_xpath(f".//*[contains(text(), '{filter_name}')]")\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..').click()
 
 def find_textbox_filter(d, filter_name=""):
-    fil = d.find_elements_by_xpath(f"//*[contains(text(), '{filter_name}')]")[1]\
+    fil = d.find_element_by_class_name("ut-pinned-list")\
+    .find_elements_by_xpath(f".//*[contains(text(), '{filter_name}')]")[1]\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..')\
     .find_element_by_class_name("numericInput")

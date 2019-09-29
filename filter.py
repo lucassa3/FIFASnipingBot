@@ -3,7 +3,7 @@ from utils import *
 class Filter():
     def __init__(self, name="", quality="", chem_style="", 
                 league="", position="", nation="", club="",
-                min_bid=0, max_bid=0, min_price=0, max_price=0):
+                min_bid=0, max_bid=0, min_price=0, max_price=0, consumable_type="", chem_type=""):
         self.name = name
 
         self.quality = quality
@@ -18,6 +18,9 @@ class Filter():
         self.max_bid = max_bid
         self.min_price = min_price
         self.max_price = max_price
+
+        self.consumable_type = consumable_type
+        self.chem_type = chem_type
 
         self.textbox_fields = {"min_bid", "max_bid", "min_price", "max_price"}
 
