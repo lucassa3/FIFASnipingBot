@@ -25,9 +25,7 @@ class ProgramState():
 				time.sleep(1)
 				print(ProgramState.active_thread.isAlive())
 
-			print(f"dando join na thread")
 			ProgramState.active_thread.join()
-			print(f"dei join na thread")
 			ProgramState.stop_thread_flag = False
 	
 	@staticmethod
