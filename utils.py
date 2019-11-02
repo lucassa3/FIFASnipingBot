@@ -313,6 +313,9 @@ def back_transfer_search(d):
     d.find_element_by_class_name("ut-navigation-bar-view")\
     .find_element_by_class_name("ut-navigation-button-control").click()
 
+def find_click_reset_filter_btn(d):
+    d.find_element_by_xpath("//*[contains(text(), 'Redefinir')]").click()
+
 def wait_loading(d, wait_extra=0):
     ready = False
     while not ready:
@@ -418,8 +421,6 @@ def input_name(d, player_name):
     player_name_box = d.find_element_by_class_name("ut-player-search-control")\
         .find_element_by_xpath(".//*[@placeholder='Digite o Nome do Jogador']")
 
-    
-
     retry_cmd(player_name_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
     retry_cmd(player_name_box.send_keys, 0.02, 0, Keys.DELETE)
 
@@ -435,14 +436,29 @@ def find_player_name_btn(d):
         .find_elements_by_class_name("btn-text")[0]\
         .find_element_by_xpath("..")
 
+def find_player_name_btn(d):
+    return d.find_element_by_class_name("ut-player-search-control")\
+        .find_element_by_class_name("inline-list")\
+        .find_elements_by_class_name("btn-text")[0]\
+        .find_element_by_xpath("..")
 
+def send_player_to_club(d):
+    d.find_element_by_class_name("ui-layout-right")\
+    .find_element_by_xpath(".//*[contains(text(), 'Enviar ao Meu clube')]")\
+    .find_element_by_xpath("..").click()
+
+
+def already_in_club(d):
+    return True if len(d.find_element_by_class_name("ui-layout-right")\
+        .find_elements_by_xpath(".//*[contains(text(), 'Trocar duplicata do clube')]")) > 0 else False
+    
 def buy_card(d, sell=True):
     res = retry_cmds([find_buy_btn, find_no_results], 0, 0, [[d], [d]])
     if res == "find_buy_btn":
         idx = retry_cmd(select_buy_card, 0, 0, d)
         retry_cmd(find_click_buy_btn, 0, 0, d)
         retry_cmd(confirm_buy, 0, 0, d)
-        time.sleep(2)
+        time.sleep(1.6)
         status = check_status_buy(d, idx)
 
         if status == "expired":
@@ -460,7 +476,14 @@ def buy_card(d, sell=True):
                 time.sleep(0.5)
                 return (bought_price, sold_price)
             else:
-                return (bought_price, 0)
+                if not already_in_club(d):
+                    send_player_to_club(d)
+                    time.sleep(0.5)
+                    return (bought_price, 0)
+                else:
+                    sold_price = sell_item(d)
+                    time.sleep(0.5)
+                    return (bought_price, sold_price)
 
     elif res == "find_no_results":
         wait_loading(d, 0)

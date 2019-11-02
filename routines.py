@@ -13,6 +13,7 @@ def async_sell_players():
     ProgramState.switch_thread(sell_cards)
 
 def async_snipe(**kwargs):
+    print(kwargs["sell_player"])
     ProgramState.switch_thread(snipe, kwargs)
 
 def async_full_routine(**kwargs):
@@ -57,6 +58,7 @@ def snipe(
     max_price,
     # consumable_type,
     # chem_type
+    sell_player
     ):
     counter = 0
     tradepile_size = 0
@@ -81,6 +83,8 @@ def snipe(
     # if consumable_type:
     #     retry_cmd(goto_consumables, 0, 0, ProgramState.selenium_instance.getWebDriver())
 
+    retry_cmd(find_click_reset_filter_btn, 0, 0, ProgramState.selenium_instance.getWebDriver())
+
 
     search_filter.update(
         ProgramState.selenium_instance.getWebDriver(),
@@ -99,7 +103,10 @@ def snipe(
     while tradepile_size < max_tradepile_size:
         retry_cmd(confirm_search, 0, 0, ProgramState.selenium_instance.getWebDriver())
 
-        result = buy_card(ProgramState.selenium_instance.getWebDriver(), sell=True)
+        if sell_player == 1:
+            result = buy_card(ProgramState.selenium_instance.getWebDriver(), sell=False)
+        else:
+            result = buy_card(ProgramState.selenium_instance.getWebDriver(), sell=True)
 
         if result:
             tradepile_size += 1
@@ -107,7 +114,7 @@ def snipe(
             total_spent += result[0]
             total_earns += result[1]*0.95
             if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_players.configure(text=f"{str(cards_got)}")
-            if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_profit.configure(text=f"{str(total_earns-total_spent)}")
+            if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_profit.configure(text=f"{str(int(total_earns-total_spent))}")
         
         retry_cmd(back_transfer_search, 0, 0, ProgramState.selenium_instance.getWebDriver())
         controller.manage_filter(ProgramState.selenium_instance.getWebDriver(), counter, search_filter)
