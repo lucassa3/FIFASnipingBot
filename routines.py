@@ -40,15 +40,13 @@ def sell_cards():
     if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Removing sold cards")
     retry_cmd(remove_sold, 1, 3, ProgramState.selenium_instance.getWebDriver())
     wait_loading(ProgramState.selenium_instance.getWebDriver(), 2)
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Selling tradepile players")
+    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Selling tradepile cards")
     sell_tradepile_players(ProgramState.selenium_instance.getWebDriver())
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="All players sold")
+    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="All cards listed")
 
 def snipe(
-    alt_positions, 
     alt_chem_styles,
     name,
-    # pos_mod_price, 
     quality, 
     chem_style, 
     league, 
@@ -56,8 +54,6 @@ def snipe(
     nation,
     club, 
     max_price,
-    # consumable_type,
-    # chem_type
     sell_player
     ):
     counter = 0
@@ -69,19 +65,14 @@ def snipe(
 
     search_filter = Filter()
     
-    controller = FilterController(
-        alt_positions=alt_positions, 
+    controller = FilterController( 
         alt_chem_styles=alt_chem_styles,
-        # pos_mod_price=pos_mod_price, 
         target_max_price=max_price
     )
 
     retry_cmd(goto_transfers, 0, 0, ProgramState.selenium_instance.getWebDriver())
     tradepile_size = retry_cmd(get_tradepile_size, 1, 0, ProgramState.selenium_instance.getWebDriver())
     retry_cmd(goto_transfer_search, 0, 0, ProgramState.selenium_instance.getWebDriver())
-
-    # if consumable_type:
-    #     retry_cmd(goto_consumables, 0, 0, ProgramState.selenium_instance.getWebDriver())
 
     retry_cmd(find_click_reset_filter_btn, 0, 0, ProgramState.selenium_instance.getWebDriver())
 
@@ -96,8 +87,6 @@ def snipe(
         nation=("Nacionalidade", nation),
         club=("Clube", club),
         max_price=("Máx.:", max_price)
-        # consumable_type=("Treino de Jogador", consumable_type),
-        # chem_type=("Estilos Entrosam.", chem_type)
     )
 
     while tradepile_size < max_tradepile_size:
