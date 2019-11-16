@@ -56,7 +56,7 @@ class FilterController():
         elif cur_min == self.target_max_price - self._next_value(self.target_max_price, direction="down"):
             self.min_price_direction = "down"
 
-        if self.min_price_direction == "up":
+        if self.min_price_direction == "up" and self.target_max_price != 200:
             retry_cmd(find_click_inc_min_price, 0.02, 0, d)
         elif self.min_price_direction == "down":
             retry_cmd(find_click_dec_min_price, 0.02, 0, d)

@@ -153,6 +153,8 @@ def sell_item(d):
     sell_price = find_lowest_price(d)
 
     retry_cmd(find_click_back_btn, 0.1, 0, d)
+    time.sleep(0.5)
+
     retry_cmd(find_click_list_btn, 0.1, 0, d)
     wait_loading(d)
     time.sleep(0.2)
@@ -357,7 +359,7 @@ def find_lowest_price(d, num_pages=3, good_price=600):
     min_price = 9000000
     for i in range(num_pages):
         wait_loading(d)
-        time.sleep(1)
+        time.sleep(0.5)
         price_list = retry_cmd(get_card_prices, 0.2, 0, d)
         print(price_list)
         for price in price_list:      
@@ -429,12 +431,6 @@ def input_name(d, player_name):
     click_name_btn = retry_cmd(find_player_name_btn, 0.02, 0, d)
 
     retry_cmd(click_name_btn.click, 0.02, 0)
-
-def find_player_name_btn(d):
-    return d.find_element_by_class_name("ut-player-search-control")\
-        .find_element_by_class_name("inline-list")\
-        .find_elements_by_class_name("btn-text")[0]\
-        .find_element_by_xpath("..")
 
 def find_player_name_btn(d):
     return d.find_element_by_class_name("ut-player-search-control")\

@@ -109,10 +109,12 @@ def snipe(
             result = buy_card(ProgramState.selenium_instance.getWebDriver(), sell=True)
 
         if result:
-            tradepile_size += 1
             cards_got += 1
             total_spent += result[0]
             total_earns += result[1]*0.95
+            if result[1]*0.95-result[0] > 0:
+                tradepile_size += 1
+
             if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_players.configure(text=f"{str(cards_got)}")
             if current_screen([SnipeScreen, FullRoutineScreen]): get_frame().snipe_form_component.lbl_total_profit.configure(text=f"{str(int(total_earns-total_spent))}")
         
