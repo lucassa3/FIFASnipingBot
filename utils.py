@@ -33,8 +33,7 @@ def retry_cmds(cmds, sleep, timeout, args_list):
 def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
-    except Exception as e:
-        # print(e)
+    except:
         return "exception"
     else:
         if res != None:
@@ -133,17 +132,17 @@ def goto_tradepile(d):
     d.find_element_by_class_name("ut-tile-transfer-list").click()
 
 def find_click_list_btn(d):
-    list_btn_temp = d.find_element_by_class_name("ui-layout-right")\
+    d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("ut-quick-list-panel-view")\
     .find_element_by_class_name("accordian").click()
 
 def find_click_cmp_btn(d):
-    compare_btn = d.find_element_by_class_name("ui-layout-right")\
+    d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_xpath(".//*[contains(text(), 'Comparar')]")\
     .find_element_by_xpath("..").click()
 
 def find_click_back_btn(d):
-    back_btn = d.find_element_by_class_name("ui-layout-right")\
+    d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_xpath(".//*[contains(text(), 'Resultados da Busca')]")\
     .find_element_by_xpath("..")\
     .find_element_by_class_name("ut-navigation-button-control").click()
@@ -154,6 +153,8 @@ def sell_item(d):
     sell_price = find_lowest_price(d)
 
     retry_cmd(find_click_back_btn, 0.1, 0, d)
+    time.sleep(0.5)
+
     retry_cmd(find_click_list_btn, 0.1, 0, d)
     wait_loading(d)
     time.sleep(0.2)
@@ -239,7 +240,7 @@ def sell_tradepile_players(d):
         available_cards = next_available_cards
 
 def find_click_filter(d, filter_name=""):
-    fil = d.find_element_by_class_name("ut-pinned-list")\
+    d.find_element_by_class_name("ut-pinned-list")\
     .find_element_by_xpath(f".//*[contains(text(), '{filter_name}')]")\
     .find_element_by_xpath('..')\
     .find_element_by_xpath('..').click()
@@ -276,7 +277,7 @@ def cancel_filter(d, filter_name=""):
     .find_element_by_class_name("flat").click()
 
 def select_filter(d, filter_name="", value=""):
-    fil = retry_cmd(find_click_filter, 0.02, 0, d, filter_name)
+    retry_cmd(find_click_filter, 0.02, 0, d, filter_name)
     retry_cmd(d.find_element_by_xpath(f"//*[contains(text(), '{value}')]").click, 0.02, 0)
 
 def select_textbox_filter(d, filter_name="", value=""):
@@ -313,6 +314,9 @@ def confirm_search(d):
 def back_transfer_search(d):
     d.find_element_by_class_name("ut-navigation-bar-view")\
     .find_element_by_class_name("ut-navigation-button-control").click()
+
+def find_click_reset_filter_btn(d):
+    d.find_element_by_xpath("//*[contains(text(), 'Redefinir')]").click()
 
 def wait_loading(d, wait_extra=0):
     ready = False
@@ -351,18 +355,19 @@ def calc_interval(value):
     else:
         return 250
 
-def find_lowest_price(d, num_pages=2, good_price=600):
+def find_lowest_price(d, num_pages=3, good_price=600):
     min_price = 9000000
     for i in range(num_pages):
         wait_loading(d)
+        time.sleep(0.5)
         price_list = retry_cmd(get_card_prices, 0.2, 0, d)
-        
+        print(price_list)
         for price in price_list:      
             if price < min_price:
                 min_price = price
 
         if i != num_pages - 1:
-            if retry_cmd(find_click_next_btn, 0.2, 3, d) == "timeout":
+            if retry_cmd(find_click_next_btn, 0.2, 4, d) == "timeout":
                 break
 
     if min_price <= good_price:
@@ -418,8 +423,6 @@ def input_name(d, player_name):
     player_name_box = d.find_element_by_class_name("ut-player-search-control")\
         .find_element_by_xpath(".//*[@placeholder='Digite o Nome do Jogador']")
 
-    
-
     retry_cmd(player_name_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
     retry_cmd(player_name_box.send_keys, 0.02, 0, Keys.DELETE)
 
@@ -435,14 +438,23 @@ def find_player_name_btn(d):
         .find_elements_by_class_name("btn-text")[0]\
         .find_element_by_xpath("..")
 
+def send_player_to_club(d):
+    d.find_element_by_class_name("ui-layout-right")\
+    .find_element_by_xpath(".//*[contains(text(), 'Enviar ao Meu clube')]")\
+    .find_element_by_xpath("..").click()
 
+
+def already_in_club(d):
+    return True if len(d.find_element_by_class_name("ui-layout-right")\
+        .find_elements_by_xpath(".//*[contains(text(), 'Trocar duplicata do clube')]")) > 0 else False
+    
 def buy_card(d, sell=True):
     res = retry_cmds([find_buy_btn, find_no_results], 0, 0, [[d], [d]])
     if res == "find_buy_btn":
         idx = retry_cmd(select_buy_card, 0, 0, d)
         retry_cmd(find_click_buy_btn, 0, 0, d)
         retry_cmd(confirm_buy, 0, 0, d)
-        time.sleep(2)
+        time.sleep(1.6)
         status = check_status_buy(d, idx)
 
         if status == "expired":
@@ -460,7 +472,14 @@ def buy_card(d, sell=True):
                 time.sleep(0.5)
                 return (bought_price, sold_price)
             else:
-                return (bought_price, 0)
+                if not already_in_club(d):
+                    send_player_to_club(d)
+                    time.sleep(0.5)
+                    return (bought_price, 0)
+                else:
+                    sold_price = sell_item(d)
+                    time.sleep(0.5)
+                    return (bought_price, sold_price)
 
     elif res == "find_no_results":
         wait_loading(d, 0)

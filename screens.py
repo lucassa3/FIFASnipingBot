@@ -1,5 +1,6 @@
 import routines as routines
 import tkinter as tk
+
 class ScreenController(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -72,6 +73,7 @@ class StartStopComponent(tk.Frame):
                     "position" : master.position.get(),
                     "nation" : master.nation.get(),
                     "club" : master.club.get(),
+                    "sell_player" : master.lookup_sell_player_var.get(),
                     "max_price" : int(master.max_price.get()) if master.max_price.get() else 0
                 })
             ).grid(row = 0,column = 0)
@@ -168,6 +170,11 @@ class SnipeFormComponent(tk.Frame):
         self.max_price = tk.Entry(self)
         self.max_price.grid(row = 4, column = 3)
 
+        self.lookup_sell_player_var = tk.IntVar()
+        tk.Label(self, text="Do not sell players:").grid(row = 5, column = 2)
+        self.sell_player = tk.Checkbutton(self, variable=self.lookup_sell_player_var)
+        self.sell_player.grid(row = 5, column = 3)
+
         if full_routine_form:
             StartStopComponent(self, full_routine=True).grid(row = 9, column = 0, columnspan=4, pady=20)
         else:
@@ -178,10 +185,14 @@ class SnipeFormComponent(tk.Frame):
         tk.Label(self, text="Total Players Bought:").grid(row = 11, column = 0)
         tk.Label(self, text="Total Profit:").grid(row = 12, column = 0)
 
-        self.lbl_total_players = tk.Label(self, text="0", relief="groove", width=15)
+        self.lbl_total_players = tk.Label(self, text="0", relief="groove", width=6)
+        self.lbl_total_players.config(font=("Arial", 24))
         self.lbl_total_players.grid(row = 11, column = 1)
-        self.lbl_total_profit = tk.Label(self, text="0", relief="groove", width=15)
+
+        self.lbl_total_profit = tk.Label(self, text="0", relief="groove", width=6)
+        self.lbl_total_profit.config(font=("Arial", 24))
         self.lbl_total_profit.grid(row = 12, column = 1)
+        
 
 # class SnipeConsumableFormComponent(tk.Frame):
 #     def __init__(self, master):
