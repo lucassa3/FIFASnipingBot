@@ -7,7 +7,6 @@ def retry_cmd(cmd, sleep, timeout, *args):
     success = False
     start = time.time()
     while not success:
-        print(cmd.__name__)
         if ProgramState.stop_thread_flag:
             raise ValueError("Finalizando Thread")
             
@@ -53,7 +52,6 @@ def find_click_login_btn(d):
 def check_if_loading(d):
     loading = d.find_elements_by_class_name("loaderIcon")
     if len(loading) > 0:
-        print(loading[0].get_attribute("class"))
         if loading[0].get_attribute("style") == "":
             return "is_loading"
         else:
@@ -361,7 +359,7 @@ def find_lowest_price(d, num_pages=3, good_price=600):
         wait_loading(d)
         time.sleep(0.5)
         price_list = retry_cmd(get_card_prices, 0.2, 0, d)
-        print(price_list)
+
         for price in price_list:      
             if price < min_price:
                 min_price = price
