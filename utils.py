@@ -127,9 +127,6 @@ def get_tradepile_size(d):
 def goto_transfer_search(d):
     d.find_elements_by_class_name("col-1-1")[1].click()
 
-# def goto_consumables(d):
-#     d.find_element_by_xpath("//*[contains(text(), 'Consumíveis')]").click()
-
 def goto_tradepile(d):
     d.find_element_by_class_name("ut-tile-transfer-list").click()
 
@@ -464,48 +461,6 @@ def find_item_list(d, cur_list):
         raise ValueError("its the same list!")
     
     return item_list
-
-def get_items_list():
-    items_list =  ProgramState.selenium_instance.getWebDriver() \
-        .find_element_by_xpath(".//h2[text()='Itens']") \
-        .find_element_by_xpath("..") \
-        .find_element_by_class_name("itemList") \
-        .find_elements_by_class_name("listFUTItem")
-    
-    # return [card.card_builder(elem) for elem in items_list]
-    return [card.card_builder(elem) for elem in items_list]
-def update_items_list(cur_items):
-    next_items = get_items_list()
-
-    if len(next_items) != (len(cur_items) - 1):
-        raise ValueError("did not refresh list")
-    
-    next_items[0].elem.click() #only to test if clickable
-
-    # return [card.card_builder(elem) for elem in next_items]
-
-def exp_deal_with_bronze_items():
-    items = retry_cmd(get_items_list, 0.2, 0)
-
-    i = 0
-    while (len(items) > 0) and (i < len(items)):
-        if exp_maybe_sell_item(items[i]):
-            items = retry_cmd(update_items_list, 0.2, 0, items)
-        else:
-            i += 1
-
-def exp_maybe_sell_item(card):
-    retry_cmd(cmd=card.click, sleep=0.2, timeout=0)
-    time.sleep(2) #to be removed
-    
-    possible_claim_card = card.elem.find_elements_by_xpath("//*[contains(text(), 'Resgatar ')]")
-    if len(possible_claim_card) > 0:
-        retry_cmd(cmd=possible_claim_card.find_element_by_xpath("..").click, sleep=0.2, timeout=0)
-
-    # retry_cmd(find_click_cmp_btn, 0.1, 0, d)
-
-    # sell_price = find_price_or_quit(d)
-
 
 def deal_with_bronze_items(d):
     items = retry_cmd(find_item_list, 0.2, 0, d, [])
