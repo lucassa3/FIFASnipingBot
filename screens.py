@@ -9,6 +9,7 @@ class ScreenController(tk.Tk):
             "sell_screen" : SellScreen(self),
             "snipe_screen" : SnipeScreen(self),
             "full_routine" : FullRoutineScreen(self),
+            "farm_bronze_pack_routine" : BronzePackFarmScreen(self),
             "start_page" : StartPage(self)
         }
         self.switch_frame("start_page")
@@ -34,6 +35,8 @@ class NavBarComponent(tk.Frame):
                   command=lambda: master.switch_frame("snipe_screen")).grid(row = 0,column = 1)
         tk.Button(self, text="Full Routine",
                   command=lambda: master.switch_frame("full_routine")).grid(row = 0,column = 2)
+        tk.Button(self, text="Farm Bronze Packs",
+                  command=lambda: master.switch_frame("farm_bronze_pack_routine")).grid(row = 0,column = 3)
 
 class StartStopComponent(tk.Frame):
     def __init__(self, master, full_routine=False, start_button_label="Start", stop_button_label="Stop"):
@@ -96,6 +99,29 @@ class SellComponent(tk.Frame):
             fg="#48c732",
             command=lambda: routines.async_sell_players()
         ).grid(row = 0,column = 0, pady=5)
+        tk.Button(
+            self, 
+            text="Stop",
+            fg="#de190b",
+            command=routines.stop_program
+        ).grid(row = 0,column = 1)
+
+class FarmBronzePackComponent(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+
+        tk.Button(
+            self, 
+            text="Start Farming",
+            fg="#48c732",
+            command=lambda: routines.async_farm_bronze_packs()
+        ).grid(row = 0,column = 0, pady=5)
+        tk.Button(
+            self, 
+            text="Stop",
+            fg="#de190b",
+            command=routines.stop_program
+        ).grid(row = 0,column = 1)
 
 
 class SnipeFormComponent(tk.Frame):
@@ -145,10 +171,8 @@ class SnipeFormComponent(tk.Frame):
         self.sell_player = tk.Checkbutton(self, variable=self.lookup_sell_player_var)
         self.sell_player.grid(row = 5, column = 1)
 
-        if full_routine_form:
-            StartStopComponent(self, full_routine=True).grid(row = 9, column = 0, columnspan=4, pady=20)
-        else:
-            StartStopComponent(self, full_routine=False).grid(row = 9, column = 0, columnspan=4, pady=20)
+        StartStopComponent(self, full_routine_form).grid(row = 9, column = 0, columnspan=4, pady=20)
+
 
         tk.Label(self, text="Status:").grid(row = 10, column = 0)
 
@@ -193,3 +217,10 @@ class FullRoutineScreen(tk.Frame):
         NavBarComponent(master).grid(row = 0, column = 0)
         self.snipe_form_component = SnipeFormComponent(self, full_routine_form=True)
         self.snipe_form_component.grid(row = 1, column = 0)
+
+class BronzePackFarmScreen(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        NavBarComponent(master).grid(row = 0, column = 0)
+        self.start_button = FarmBronzePackComponent(self)
+        self.start_button.grid(row = 1, column = 0)

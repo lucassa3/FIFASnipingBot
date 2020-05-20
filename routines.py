@@ -12,8 +12,10 @@ def call_login(credentials):
 def async_sell_players():
     ProgramState.switch_thread(sell_cards)
 
+def async_farm_bronze_packs():
+    ProgramState.switch_thread(farm_bronze_packs_sync_routine)
+
 def async_snipe(**kwargs):
-    print(kwargs["sell_player"])
     ProgramState.switch_thread(snipe, kwargs)
 
 def async_full_routine(**kwargs):
@@ -43,6 +45,18 @@ def sell_cards():
     if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Selling tradepile cards")
     sell_tradepile_players(ProgramState.selenium_instance.getWebDriver())
     if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="All cards listed")
+
+def farm_bronze_packs_sync_routine():
+    while True:
+        retry_cmd(goto_store, 1, 0, ProgramState.selenium_instance.getWebDriver())
+        retry_cmd(goto_bronze_packs, 0, 0, ProgramState.selenium_instance.getWebDriver())
+        retry_cmd(buy_base_bronze_pack, 0, 0, ProgramState.selenium_instance.getWebDriver())
+        retry_cmd(confirm_dialog, 0, 0, ProgramState.selenium_instance.getWebDriver())
+        time.sleep(8)
+        deal_with_bronze_items(ProgramState.selenium_instance.getWebDriver())
+        time.sleep(5)
+
+
 
 def snipe(
     alt_chem_styles,
@@ -96,6 +110,9 @@ def snipe(
             result = buy_card(ProgramState.selenium_instance.getWebDriver(), sell=False)
         else:
             result = buy_card(ProgramState.selenium_instance.getWebDriver(), sell=True)
+        
+        if counter > 0 and counter %25 == 0:
+            time.sleep(5)
 
         if result:
             cards_got += 1

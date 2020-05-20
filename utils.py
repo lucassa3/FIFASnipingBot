@@ -32,7 +32,8 @@ def retry_cmds(cmds, sleep, timeout, args_list):
 def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
-    except:
+    except Exception as e:
+        print(e)
         return "exception"
     else:
         if res != None:
@@ -113,6 +114,9 @@ def logout(d):
 
 def goto_transfers(d):
     d.find_element_by_class_name("icon-transfer").click()
+
+def goto_store(d):
+    d.find_element_by_class_name("icon-store").click()
         
 def get_tradepile_size(d):
     size = d.find_element_by_class_name("ut-tile-transfer-list")\
@@ -128,6 +132,10 @@ def goto_transfer_search(d):
 
 def goto_tradepile(d):
     d.find_element_by_class_name("ut-tile-transfer-list").click()
+
+def goto_bronze_packs(d):
+    d.find_element_by_class_name("menu-container")\
+    .find_element_by_xpath(".//*[contains(text(), 'BRONZE')]").click()
 
 def find_click_list_btn(d):
     d.find_element_by_class_name("ui-layout-right")\
@@ -182,7 +190,7 @@ def sell_item(d):
     retry_cmd(imm_price_box.send_keys, 0.02, 0, str(sell_price))
 
     list_btn = d.find_element_by_class_name("ui-layout-right")\
-    .find_element_by_xpath(".//*[contains(text(), 'Listar item') and not(contains(text(), 'novamente'))]")
+    .find_element_by_xpath(".//*[contains(text(), 'Listar para') and not(contains(text(), 'novamente'))]")
     retry_cmd(list_btn.click, 0, 0)
 
     return sell_price
@@ -357,7 +365,7 @@ def find_lowest_price(d, num_pages=3, good_price=600):
     min_price = 9000000
     for i in range(num_pages):
         wait_loading(d)
-        time.sleep(0.5)
+        time.sleep(2)
         price_list = retry_cmd(get_card_prices, 0.2, 0, d)
 
         for price in price_list:      
@@ -396,7 +404,7 @@ def find_click_buy_btn(d):
     d.find_element_by_class_name("ui-layout-right")\
     .find_element_by_class_name("buyButton").click()
 
-def confirm_buy(d):
+def confirm_dialog(d):
     d.find_element_by_class_name("dialog-body")\
     .find_element_by_xpath("..")\
     .find_element_by_xpath("//*[contains(text(), 'OK')]").click()
@@ -441,6 +449,169 @@ def send_player_to_club(d):
     .find_element_by_xpath(".//*[contains(text(), 'Enviar ao Meu clube')]")\
     .find_element_by_xpath("..").click()
 
+def buy_base_bronze_pack(d):
+    d.find_element_by_class_name("ut-store-pack-details-view")\
+    .find_element_by_xpath(".//*[contains(text(), '400')]")\
+    .find_element_by_xpath("..").click()
+
+def find_item_list(d, cur_list):
+    item_list =  d.find_element_by_class_name("itemList")\
+        .find_elements_by_class_name("listFUTItem")
+
+    if len(item_list) <= 0:
+        raise ValueError("did not expect this list size!")
+    elif cur_list and (cur_list[0].id == item_list[0].id):
+        raise ValueError("its the same list!")
+    
+    return item_list
+
+def get_items_list():
+    items_list =  ProgramState.selenium_instance.getWebDriver() \
+        .find_element_by_xpath(".//h2[text()='Itens']") \
+        .find_element_by_xpath("..") \
+        .find_element_by_class_name("itemList") \
+        .find_elements_by_class_name("listFUTItem")
+    
+    # return [card.card_builder(elem) for elem in items_list]
+
+def update_items_list(cur_items):
+    next_items = get_items_list()
+
+    if len(next_items) != (len(cur_items) - 1):
+        raise ValueError("did not refresh list")
+    
+    next_items[0].elem.click() #only to test if clickable
+
+    # return [card.card_builder(elem) for elem in next_items]
+
+def exp_deal_with_bronze_items():
+    items = retry_cmd(get_items_list, 0.2, 0)
+
+    i = 0
+    while (len(items) > 0) and (i < len(items)):
+        if exp_maybe_sell_item(items[i]):
+            items = retry_cmd(update_items_list, 0.2, 0, items)
+        else:
+            i += 1
+
+def exp_maybe_sell_item(card):
+    retry_cmd(cmd=card.click, sleep=0.2, timeout=0)
+    time.sleep(2) #to be removed
+    
+    possible_claim_card = card.elem.find_elements_by_xpath("//*[contains(text(), 'Resgatar ')]")
+    if len(possible_claim_card) > 0:
+        retry_cmd(cmd=possible_claim_card.find_element_by_xpath("..").click, sleep=0.2, timeout=0)
+
+    # retry_cmd(find_click_cmp_btn, 0.1, 0, d)
+
+    # sell_price = find_price_or_quit(d)
+
+
+def deal_with_bronze_items(d):
+    items = retry_cmd(find_item_list, 0.2, 0, d, [])
+    wait_loading(d)
+    
+    i = 0
+    while (len(items) > 0) and (i < len(items)):
+        card = items[i]
+        retry_cmd(card.click, 0.1, 0)
+        if maybe_sell_item(d):
+            time.sleep(2.5)
+            items = retry_cmd(find_item_list, 0.2, 0, d, items)
+        else:
+            time.sleep(1)
+            i += 1
+
+    retry_cmd(sell_duplicates_if_present, 0.1, 4, d)
+    retry_cmd(store_remaining_cards_if_present, 0.1, 4, d)
+
+def sell_duplicates_if_present(d):
+    d.find_elements_by_xpath("//*[contains(text(), 'duplicatas')]")[0] \
+    .find_element_by_xpath("..").click()
+    confirm_dialog(d)
+
+def store_remaining_cards_if_present(d):
+    d.find_element_by_xpath("//*[contains(text(), 'Itens')]") \
+    .find_element_by_xpath("..").find_element_by_class_name("call-to-action") \
+    .click()
+
+def maybe_sell_item(d):
+    possible_coin_card = retry_cmd(d.find_element_by_xpath, 0.2, 0.7, "//*[contains(text(), 'Resgatar ')]")
+    if possible_coin_card not in ("timeout", "exception"):
+        time.sleep(2)
+        possible_coin_card.find_element_by_xpath("..").click()
+        time.sleep(2)
+        return False
+    
+    retry_cmd(find_click_cmp_btn, 0.1, 0, d)
+
+    sell_price = find_price_or_quit(d)
+
+    if sell_price == 0:
+        return False
+
+    retry_cmd(find_click_back_btn, 0.1, 0, d)
+    time.sleep(0.5)
+
+    retry_cmd(find_click_list_btn, 0.1, 0, d)
+    wait_loading(d)
+    time.sleep(0.2)
+
+    #escreve preco min: 9000000 (default)
+    init_price_box = d.find_element_by_class_name("ui-layout-right")\
+    .find_element_by_xpath(".//*[contains(text(), 'Inicial:')]")\
+    .find_element_by_xpath("..")\
+    .find_element_by_xpath("..")\
+    .find_element_by_class_name("numericInput")
+    time.sleep(0.15)
+    retry_cmd(init_price_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
+    retry_cmd(init_price_box.send_keys, 0.02, 0, Keys.DELETE)
+    time.sleep(0.2)
+    retry_cmd(init_price_box.send_keys, 0.02, 0, "9000000")
+
+    #escreve preco venda: min_price
+    imm_price_box = d.find_element_by_class_name("ui-layout-right")\
+    .find_element_by_xpath(".//*[contains(text(), 'Imediato:')]")\
+    .find_element_by_xpath("..")\
+    .find_element_by_xpath("..")\
+    .find_element_by_class_name("numericInput")
+    time.sleep(0.15)
+    retry_cmd(imm_price_box.send_keys, 0.02, 0, Keys.CONTROL + "a")
+    retry_cmd(imm_price_box.send_keys, 0.02, 0, Keys.DELETE)
+    time.sleep(0.2)
+    retry_cmd(imm_price_box.send_keys, 0.02, 0, str(sell_price))
+
+    list_btn = d.find_element_by_class_name("ui-layout-right")\
+    .find_element_by_xpath(".//*[contains(text(), 'Listar para') and not(contains(text(), 'novamente'))]")
+    retry_cmd(list_btn.click, 0, 0)
+
+    return sell_price
+
+def find_price_or_quit(d, num_pages=3, good_price=450):
+    min_price = 9000000
+    for i in range(num_pages):
+        wait_loading(d)
+        price_list = []
+        while len(price_list) == 0:
+            price_list = retry_cmd(get_card_prices, 0.2, 0, d)
+
+        for price in price_list:      
+            if price < min_price:
+                min_price = price
+
+            if price < 400:
+                return 0
+
+        if i != num_pages - 1:
+            if retry_cmd(find_click_next_btn, 0.2, 4, d) == "timeout":
+                break
+        
+        time.sleep(1.7)
+
+    if min_price <= good_price:
+        return min_price
+    else:
+        return min_price - calc_interval(min_price)
 
 def already_in_club(d):
     return True if len(d.find_element_by_class_name("ui-layout-right")\
@@ -451,7 +622,7 @@ def buy_card(d, sell=True):
     if res == "find_buy_btn":
         idx = retry_cmd(select_buy_card, 0, 0, d)
         retry_cmd(find_click_buy_btn, 0, 0, d)
-        retry_cmd(confirm_buy, 0, 0, d)
+        retry_cmd(confirm_dialog, 0, 0, d)
         time.sleep(1.6)
         status = check_status_buy(d, idx)
 
