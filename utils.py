@@ -473,7 +473,7 @@ def get_items_list():
         .find_elements_by_class_name("listFUTItem")
     
     # return [card.card_builder(elem) for elem in items_list]
-
+    return [card.card_builder(elem) for elem in items_list]
 def update_items_list(cur_items):
     next_items = get_items_list()
 
