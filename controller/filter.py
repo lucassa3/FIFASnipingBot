@@ -1,9 +1,24 @@
-from utils import *
+from controller.utils import *
 
-class Filter():
-    def __init__(self, name="", quality="", rarity="", chem_style="", 
-                league="", position="", nation="", club="",
-                min_bid=0, max_bid=0, min_price=0, max_price=0, consumable_type="", chem_type=""):
+
+class Filter:
+    def __init__(
+        self,
+        name="",
+        quality="",
+        rarity="",
+        chem_style="",
+        league="",
+        position="",
+        nation="",
+        club="",
+        min_bid=0,
+        max_bid=0,
+        min_price=0,
+        max_price=0,
+        consumable_type="",
+        chem_type="",
+    ):
         self.name = name
 
         self.quality = quality
@@ -14,7 +29,7 @@ class Filter():
         self.nation = nation
         self.club = club
 
-        #ja q eh um agente externo que modifica isso, to suando esses valores pra nada?
+        # ja q eh um agente externo que modifica isso, to suando esses valores pra nada?
         self.min_bid = min_bid
         self.max_bid = max_bid
         self.min_price = min_price
@@ -43,4 +58,6 @@ class Filter():
                             cancel_filter(d, self.__dict__[key])
                     setattr(self, key, kwargs[key][1])
             else:
-                raise ValueError(f"tried to modify filter {key}, but this filter does not exist!")
+                raise ValueError(
+                    f"tried to modify filter {key}, but this filter does not exist!"
+                )

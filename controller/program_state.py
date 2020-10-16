@@ -1,6 +1,6 @@
 import threading
-from screens import ScreenController
-from selenium_session import SeleniumSession
+from view.screen_management import ScreenController
+from controller.selenium_session import SeleniumSession
 import time
 
 class ProgramState():

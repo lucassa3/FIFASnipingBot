@@ -1,6 +1,6 @@
 import threading
-import routines as routines
-from program_state import ProgramState
+import controller.routines as routines
+from controller.program_state import ProgramState
         
 if __name__ == "__main__":
     ProgramState.init_resources()
