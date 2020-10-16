@@ -32,8 +32,19 @@ class ScreenManager(tk.Tk):
         self._frame.grid()
     
     def log_text(self, screens_to_update, text):
+        """ works only for components that have status field"""
         if type(self._frame) in screens_to_update:
             self._frame.status_text_component.status.configure(text=text)
+    
+    def update_total_cards(self, screens_to_update, text):
+        """ works only for components that have total cards field"""
+        if type(self._frame) in screens_to_update:
+            self._frame.snipe_form_component.lbl_total_players.configure(text=text)
+    
+    def update_total_profit(self, screens_to_update, text):
+        """ works only for components that have total profit field"""
+        if type(self._frame) in screens_to_update:
+            self._frame.snipe_form_component.lbl_total_profit.configure(text=text)
 
 
 

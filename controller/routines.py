@@ -35,18 +35,6 @@ def call_login(credentials):
     login(ProgramState.selenium_instance.get_web_driver(), credentials)
 
 
-def async_snipe(**kwargs):
-    ProgramState.switch_thread(snipe, kwargs)
-
-
-def async_full_routine(**kwargs):
-    ProgramState.switch_thread(full_routine, kwargs)
-
-
-def stop_program():
-    ProgramState.stop_thread()
-
-
 def full_routine(**kwargs):
     sell_cards()
     snipe(**kwargs)
@@ -87,12 +75,15 @@ def farm_bronze_packs_sync_routine():
     while True:
         log([BronzePackFarmScreen], "Going to store")
         retry_cmd(goto_store, 1, 0, web_driver)
+
         log([BronzePackFarmScreen], "Going to bronze packs")
         retry_cmd(goto_bronze_packs, 0, 0, web_driver)
+
         log([BronzePackFarmScreen], "Buying a bronze pack")
         retry_cmd(buy_base_bronze_pack, 0, 0, web_driver)
         retry_cmd(confirm_dialog, 0, 0, web_driver)
         time.sleep(8)
+
         log([BronzePackFarmScreen], "Dealing with the items")
         deal_with_bronze_items(web_driver)
         time.sleep(5)
@@ -119,6 +110,8 @@ def snipe(
     total_earns = 0
 
     web_driver = ProgramState.selenium_instance.get_web_driver()
+    log_total_cards = ProgramState.screen_controller.update_total_cards
+    log_total_profit = ProgramState.screen_controller.update_total_profit
 
     search_filter = Filter()
 
@@ -168,14 +161,10 @@ def snipe(
             if result[1] * 0.95 - result[0] > 0:
                 tradepile_size += 1
 
-            if current_screen([SnipeScreen, FullRoutineScreen]):
-                get_frame().snipe_form_component.lbl_total_players.configure(
-                    text=f"{str(cards_got)}"
-                )
-            if current_screen([SnipeScreen, FullRoutineScreen]):
-                get_frame().snipe_form_component.lbl_total_profit.configure(
-                    text=f"{str(int(total_earns-total_spent))}"
-                )
+            log_total_cards([SnipeScreen, FullRoutineScreen], f"{str(cards_got)}")
+            log_total_profit(
+                [SnipeScreen, FullRoutineScreen], f"{str(int(total_earns-total_spent))}"
+            )
 
         retry_cmd(back_transfer_search, 0, 0, web_driver)
         controller.manage_filter(web_driver, counter, search_filter)

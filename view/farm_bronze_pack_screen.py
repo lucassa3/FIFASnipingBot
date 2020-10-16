@@ -26,6 +26,6 @@ class FarmBronzePackComponent(tk.Frame):
                 routines.farm_bronze_packs_sync_routine
             ),
         ).grid(row=0, column=0, pady=5)
-        tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(
+        tk.Button(self, text="Stop", fg="#de190b", command=ps.ProgramState.stop_thread).grid(
             row=0, column=1
         )

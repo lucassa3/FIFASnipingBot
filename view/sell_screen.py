@@ -24,6 +24,6 @@ class SellComponent(tk.Frame):
             fg="#48c732",
             command=lambda: ps.ProgramState.switch_thread(routines.sell_cards),
         ).grid(row=0, column=0, pady=5)
-        tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(
+        tk.Button(self, text="Stop", fg="#de190b", command=ps.ProgramState.stop_thread).grid(
             row=0, column=1
         )

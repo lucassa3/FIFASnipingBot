@@ -89,7 +89,7 @@ class StartStopComponent(tk.Frame):
             ).grid(row=0, column=0)
 
         tk.Button(
-            self, text=stop_button_label, fg="#de190b", command=routines.stop_program
+            self, text=stop_button_label, fg="#de190b", command=ps.ProgramState.stop_thread
         ).grid(row=0, column=1)
 
 
