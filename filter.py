@@ -1,12 +1,13 @@
 from utils import *
 
 class Filter():
-    def __init__(self, name="", quality="", chem_style="", 
+    def __init__(self, name="", quality="", rarity="", chem_style="", 
                 league="", position="", nation="", club="",
                 min_bid=0, max_bid=0, min_price=0, max_price=0, consumable_type="", chem_type=""):
         self.name = name
 
         self.quality = quality
+        self.rarity = rarity
         self.chem_style = chem_style
         self.league = league
         self.position = position

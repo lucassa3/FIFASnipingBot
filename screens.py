@@ -51,6 +51,7 @@ class StartStopComponent(tk.Frame):
                     "alt_chem_styles" : int(master.alt_chem_styles.get()) if master.alt_chem_styles.get() else 0,
                     "name" : master.name.get(),
                     "quality" : master.quality.get(),
+                    "rarity" : master.rarity.get(),
                     "chem_style" : master.chem_style.get(),
                     "league" : master.league.get(),
                     "position" : master.position.get(),
@@ -68,6 +69,7 @@ class StartStopComponent(tk.Frame):
                     "alt_chem_styles" : int(master.alt_chem_styles.get()) if master.alt_chem_styles.get() else 0,
                     "name" : master.name.get(),
                     "quality" : master.quality.get(),
+                    "rarity" : master.rarity.get(),
                     "chem_style" : master.chem_style.get(),
                     "league" : master.league.get(),
                     "position" : master.position.get(),
@@ -85,13 +87,18 @@ class StartStopComponent(tk.Frame):
             command=routines.stop_program
         ).grid(row = 0,column = 1)
 
+class StatusTextComponent(tk.Frame):
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        tk.Label(self, text="Status:").grid(row = 0,column = 0)
+        
+        self.status = tk.Label(self, text="")
+        self.status.grid(row = 1,column = 0)
+
 
 class SellComponent(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Label(self, text="Status:").grid(row = 1,column = 0)
-        self.lbl = tk.Label(self, text="")
-        self.lbl.grid(row = 2,column = 0)
 
         tk.Button(
             self, 
@@ -132,6 +139,9 @@ class SnipeFormComponent(tk.Frame):
         self.name = tk.Entry(self)
         self.name.grid(row = 0, column = 1, pady=20, padx=10)
 
+        tk.Label(self, text="Rarity:").grid(row = 0, column = 2)
+        self.rarity = tk.Entry(self)
+        self.rarity.grid(row = 0, column = 3)
 
         tk.Label(self, text="Quality:").grid(row = 1, column = 0)
         self.quality = tk.Entry(self)
@@ -192,7 +202,7 @@ class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         NavBarComponent(master).grid(row = 0, column = 0)
-        tk.Label(self, text="Welcome to FIFA 20 Bot!").grid(row = 1, column = 0, pady=20)
+        tk.Label(self, text="Welcome to FIFA 21 Bot!").grid(row = 1, column = 0, pady=20)
         tk.Label(self, text="Made by Lucas Astur").grid(row = 2,column = 0, pady=20)
 
 
@@ -202,6 +212,8 @@ class SellScreen(tk.Frame):
         NavBarComponent(master).grid(row = 0, column = 0)
         self.sell_component = SellComponent(self)
         self.sell_component.grid(row = 1, column = 0)
+        self.status_text_component = StatusTextComponent(self)
+        self.status_text_component.grid(row = 2, column = 0)
         
 
 class SnipeScreen(tk.Frame):

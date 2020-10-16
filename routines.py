@@ -35,16 +35,16 @@ def get_frame():
     return ProgramState.screen_controller._frame
 
 def sell_cards():
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Going to transfers") 
+    if current_screen([SellScreen]): get_frame().status_text_component.status.configure(text="Going to transfers") 
     retry_cmd(goto_transfers, 1, 0, ProgramState.selenium_instance.getWebDriver())
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Going to tradepile")
+    if current_screen([SellScreen]): get_frame().status_text_component.status.configure(text="Going to tradepile")
     retry_cmd(goto_tradepile, 0, 0, ProgramState.selenium_instance.getWebDriver())
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Removing sold cards")
+    if current_screen([SellScreen]): get_frame().status_text_component.status.configure(text="Removing sold cards")
     retry_cmd(remove_sold, 1, 3, ProgramState.selenium_instance.getWebDriver())
     wait_loading(ProgramState.selenium_instance.getWebDriver(), 2)
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="Selling tradepile cards")
+    if current_screen([SellScreen]): get_frame().status_text_component.status.configure(text="Selling tradepile cards")
     sell_tradepile_players(ProgramState.selenium_instance.getWebDriver())
-    if current_screen([SellScreen]): get_frame().sell_component.lbl.configure(text="All cards listed")
+    if current_screen([SellScreen]): get_frame().status_text_component.status.configure(text="All cards listed")
 
 def farm_bronze_packs_sync_routine():
     while True:
@@ -61,7 +61,8 @@ def farm_bronze_packs_sync_routine():
 def snipe(
     alt_chem_styles,
     name,
-    quality, 
+    quality,
+    rarity,
     chem_style, 
     league, 
     position, 
@@ -95,6 +96,7 @@ def snipe(
         ProgramState.selenium_instance.getWebDriver(),
         name=("Name", name),
         quality=("Qualidade", quality),
+        rarity=("Raridade", rarity),
         chem_style=("Estilos Entrosam.", chem_style), 
         league=("Liga", league),
         position=("Posição", position),

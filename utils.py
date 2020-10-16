@@ -471,18 +471,20 @@ def deal_with_bronze_items(d):
         card = items[i]
         retry_cmd(card.click, 0.1, 0)
         if maybe_sell_item(d):
-            time.sleep(2.5)
+            time.sleep(2.6)
             items = retry_cmd(find_item_list, 0.2, 0, d, items)
         else:
             time.sleep(1)
             i += 1
 
+    time.sleep(0.5)
     retry_cmd(sell_duplicates_if_present, 0.1, 4, d)
     retry_cmd(store_remaining_cards_if_present, 0.1, 4, d)
 
 def sell_duplicates_if_present(d):
-    d.find_elements_by_xpath("//*[contains(text(), 'duplicatas')]")[0] \
+    d.find_elements_by_xpath("//*[contains(text(), 'duplicata')]")[0] \
     .find_element_by_xpath("..").click()
+    time.sleep(1)
     confirm_dialog(d)
 
 def store_remaining_cards_if_present(d):
