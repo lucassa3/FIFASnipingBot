@@ -26,6 +26,7 @@ class ProgramState():
 				print(ProgramState.active_thread.isAlive())
 
 			ProgramState.active_thread.join()
+			print(f"Thread joined")
 			ProgramState.stop_thread_flag = False
 	
 	@staticmethod
