@@ -1,4 +1,9 @@
-from controller.utils import *
+from model.utils import (
+    select_textbox_filter,
+    input_name,
+    select_filter,
+    cancel_filter,
+)
 
 
 class Filter:
@@ -20,7 +25,6 @@ class Filter:
         chem_type="",
     ):
         self.name = name
-
         self.quality = quality
         self.rarity = rarity
         self.chem_style = chem_style
@@ -28,13 +32,10 @@ class Filter:
         self.position = position
         self.nation = nation
         self.club = club
-
-        # ja q eh um agente externo que modifica isso, to suando esses valores pra nada?
         self.min_bid = min_bid
         self.max_bid = max_bid
         self.min_price = min_price
         self.max_price = max_price
-
         self.consumable_type = consumable_type
         self.chem_type = chem_type
 
@@ -52,7 +53,6 @@ class Filter:
                             input_name(d, kwargs[key][1])
                     else:
                         if kwargs[key][1]:
-
                             select_filter(d, kwargs[key][0], kwargs[key][1])
                         else:
                             cancel_filter(d, self.__dict__[key])

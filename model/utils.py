@@ -35,8 +35,7 @@ def retry_cmds(cmds, sleep, timeout, args_list):
 def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
-    except Exception as e:
-        print(e)
+    except Exception:
         return "exception"
     else:
         if res != None:

@@ -12,5 +12,5 @@ class SeleniumSession:
         self.driver.set_page_load_timeout("10")
         self.driver.get(url_name)
 
-    def getWebDriver(self):
+    def get_web_driver(self):
         return self.driver

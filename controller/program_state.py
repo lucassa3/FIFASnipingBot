@@ -1,6 +1,6 @@
 import threading
-from view.screen_management import ScreenController
-from controller.selenium_session import SeleniumSession
+from view.screen_management import ScreenManager
+from model.selenium_session import SeleniumSession
 import time
 
 class ProgramState():
@@ -12,7 +12,7 @@ class ProgramState():
 	@staticmethod
 	def init_resources():
 		ProgramState.selenium_instance = SeleniumSession("https://www.easports.com/br/fifa/ultimate-team/web-app/#")
-		ProgramState.screen_controller = ScreenController()
+		ProgramState.screen_controller = ScreenManager()
 
 	@staticmethod
 	def stop_thread():

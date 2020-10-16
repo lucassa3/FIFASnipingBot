@@ -101,36 +101,6 @@ class StatusTextComponent(tk.Frame):
         self.status.grid(row=1, column=0)
 
 
-class SellComponent(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-
-        tk.Button(
-            self,
-            text="Start",
-            fg="#48c732",
-            command=lambda: routines.async_sell_players(),
-        ).grid(row=0, column=0, pady=5)
-        tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(
-            row=0, column=1
-        )
-
-
-class FarmBronzePackComponent(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-
-        tk.Button(
-            self,
-            text="Start Farming",
-            fg="#48c732",
-            command=lambda: routines.async_farm_bronze_packs(),
-        ).grid(row=0, column=0, pady=5)
-        tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(
-            row=0, column=1
-        )
-
-
 class SnipeFormComponent(tk.Frame):
     def __init__(self, master, full_routine_form=False):
         tk.Frame.__init__(self, master)

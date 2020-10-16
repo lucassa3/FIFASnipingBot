@@ -1,4 +1,4 @@
-from controller.utils import (
+from model.utils import (
     get_min_price_textbox,
     retry_cmd,
     find_click_inc_min_price,

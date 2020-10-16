@@ -6,7 +6,7 @@ from view.farm_bronze_pack_screen import BronzePackFarmScreen
 from view.common_components import NavBarComponent
 
 
-class ScreenController(tk.Tk):
+class ScreenManager(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self._frame = None
