@@ -1,5 +1,6 @@
 import tkinter as tk
 import controller.routines as routines
+import controller.program_state as ps
 
 
 class NavBarComponent(tk.Frame):
@@ -42,8 +43,8 @@ class StartStopComponent(tk.Frame):
                 self,
                 text="Sell and " + start_button_label,
                 fg="#48c732",
-                command=lambda: routines.async_full_routine(
-                    **{
+                command=lambda: ps.ProgramState.switch_thread(routines.full_routine,
+                    {
                         "alt_chem_styles": int(master.alt_chem_styles.get())
                         if master.alt_chem_styles.get()
                         else 0,
@@ -66,8 +67,8 @@ class StartStopComponent(tk.Frame):
                 self,
                 text=start_button_label,
                 fg="#48c732",
-                command=lambda: routines.async_snipe(
-                    **{
+                command=lambda: ps.ProgramState.switch_thread(routines.snipe,
+                    {
                         "alt_chem_styles": int(master.alt_chem_styles.get())
                         if master.alt_chem_styles.get()
                         else 0,

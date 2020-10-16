@@ -1,5 +1,6 @@
 import tkinter as tk
 import controller.routines as routines
+import controller.program_state as ps
 from view.common_components import NavBarComponent, StatusTextComponent
 
 
@@ -21,7 +22,7 @@ class SellComponent(tk.Frame):
             self,
             text="Start",
             fg="#48c732",
-            command=lambda: routines.async_sell_players(),
+            command=lambda: ps.ProgramState.switch_thread(routines.sell_cards),
         ).grid(row=0, column=0, pady=5)
         tk.Button(self, text="Stop", fg="#de190b", command=routines.stop_program).grid(
             row=0, column=1

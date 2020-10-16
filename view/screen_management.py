@@ -30,6 +30,11 @@ class ScreenManager(tk.Tk):
             self._frame.grid_remove()
         self._frame = new_frame
         self._frame.grid()
+    
+    def log_text(self, screens_to_update, text):
+        if type(self._frame) in screens_to_update:
+            self._frame.status_text_component.status.configure(text=text)
+
 
 
 class StartPage(tk.Frame):
