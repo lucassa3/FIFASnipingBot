@@ -1,7 +1,20 @@
-from utils import get_min_price_textbox, retry_cmd, find_click_inc_min_price, find_click_dec_min_price
+from model.utils import (
+    get_min_price_textbox,
+    retry_cmd,
+    find_click_inc_min_price,
+    find_click_dec_min_price,
+)
 
-class FilterController():
-    def __init__(self, alt_positions=0, alt_chem_styles=0, pos_mod_price=False, target_min_price=0, target_max_price=0):
+
+class FilterController:
+    def __init__(
+        self,
+        alt_positions=0,
+        alt_chem_styles=0,
+        pos_mod_price=False,
+        target_min_price=0,
+        target_max_price=0,
+    ):
         self.alt_chem_styles = alt_chem_styles
         self.min_price_direction = "up"
         self.target_min_price = target_min_price
@@ -31,11 +44,13 @@ class FilterController():
                     updated_filters["chem_style"] = ("Estilos Entrosam.", None)
                 else:
                     updated_filters["chem_style"] = ("Estilos Entrosam.", "BÁSICO")
-        
+
         cur_min = get_min_price_textbox(d)
         if cur_min == self.target_min_price:
             self.min_price_direction = "up"
-        elif cur_min == self.target_max_price - self._next_value(self.target_max_price, direction="down"):
+        elif cur_min == self.target_max_price - self._next_value(
+            self.target_max_price, direction="down"
+        ):
             self.min_price_direction = "down"
 
         if self.min_price_direction == "up" and self.target_max_price != 200:
