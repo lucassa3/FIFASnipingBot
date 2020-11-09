@@ -40,14 +40,6 @@ def full_routine(**kwargs):
     snipe(**kwargs)
 
 
-def current_screen(screens):
-    return type(ProgramState.screen_controller._frame) in screens
-
-
-def get_frame():
-    return ProgramState.screen_controller._frame
-
-
 def sell_cards():
     web_driver = ProgramState.selenium_instance.get_web_driver()
     log = ProgramState.screen_controller.log_text
@@ -68,7 +60,7 @@ def sell_cards():
     log([SellScreen], "All cards listed")
 
 
-def farm_bronze_packs_sync_routine():
+def farm_bronze_packs():
     web_driver = ProgramState.selenium_instance.get_web_driver()
     log = ProgramState.screen_controller.log_text
 

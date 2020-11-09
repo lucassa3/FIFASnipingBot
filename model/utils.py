@@ -35,7 +35,7 @@ def retry_cmds(cmds, sleep, timeout, args_list):
 def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
-    except Exception:
+    except Exception as e:
         return "exception"
     else:
         if res != None:
@@ -521,7 +521,7 @@ def find_player_name_btn(d):
 
 def send_player_to_club(d):
     d.find_element_by_class_name("ui-layout-right").find_element_by_xpath(
-        ".//*[contains(text(), 'Enviar ao Meu clube')]"
+        ".//*[contains(text(), 'Enviar ao Meu Clube')]"
     ).find_element_by_xpath("..").click()
 
 
@@ -544,6 +544,13 @@ def find_item_list(d, cur_list):
     return item_list
 
 
+def is_player(card):
+    return (
+        True
+        if len(card.find_elements_by_xpath(".//*[contains(text(), 'RIT') or contains(text(), 'POS')]")) != 0
+        else False
+    )
+
 def deal_with_bronze_items(d):
     items = retry_cmd(find_item_list, 0.2, 0, d, [])
     wait_loading(d)
@@ -552,11 +559,11 @@ def deal_with_bronze_items(d):
     while (len(items) > 0) and (i < len(items)):
         card = items[i]
         retry_cmd(card.click, 0.1, 0)
-        if maybe_sell_item(d):
-            time.sleep(2.6)
+        if maybe_sell_item(d, card):
+            time.sleep(2)
             items = retry_cmd(find_item_list, 0.2, 0, d, items)
         else:
-            time.sleep(1)
+            time.sleep(0.5)
             i += 1
 
     time.sleep(0.5)
@@ -578,14 +585,17 @@ def store_remaining_cards_if_present(d):
     ).find_element_by_class_name("call-to-action").click()
 
 
-def maybe_sell_item(d):
+def maybe_sell_item(d, card):
     possible_coin_card = retry_cmd(
         d.find_element_by_xpath, 0.2, 0.7, "//*[contains(text(), 'Resgatar ')]"
     )
     if possible_coin_card not in ("timeout", "exception"):
-        time.sleep(2)
+        time.sleep(1.5)
         possible_coin_card.find_element_by_xpath("..").click()
-        time.sleep(2)
+        time.sleep(1.5)
+        return False
+
+    if not is_player(card):
         return False
 
     retry_cmd(find_click_cmp_btn, 0.1, 0, d)
