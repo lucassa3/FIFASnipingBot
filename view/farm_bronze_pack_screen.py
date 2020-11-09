@@ -23,7 +23,7 @@ class FarmBronzePackComponent(tk.Frame):
             text="Start Farming",
             fg="#48c732",
             command=lambda: ps.ProgramState.switch_thread(
-                routines.farm_bronze_packs_sync_routine
+                routines.farm_bronze_packs
             ),
         ).grid(row=0, column=0, pady=5)
         tk.Button(self, text="Stop", fg="#de190b", command=ps.ProgramState.stop_thread).grid(
