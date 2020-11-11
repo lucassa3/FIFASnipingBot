@@ -36,6 +36,7 @@ def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
     except Exception as e:
+        print(cmd.__name__)
         return "exception"
     else:
         if res != None:
@@ -471,9 +472,9 @@ def find_click_buy_btn(d):
 
 
 def confirm_dialog(d):
-    d.find_element_by_class_name("dialog-body").find_element_by_xpath(
-        ".."
-    ).find_element_by_xpath("//*[contains(text(), 'OK')]").click()
+    d.find_element_by_class_name("view-modal-container").find_element_by_xpath(
+        ".//*[contains(text(), 'OK')]"
+    ).click()
 
 
 def select_buy_card(d):
@@ -547,9 +548,15 @@ def find_item_list(d, cur_list):
 def is_player(card):
     return (
         True
-        if len(card.find_elements_by_xpath(".//*[contains(text(), 'RIT') or contains(text(), 'POS')]")) != 0
+        if len(
+            card.find_elements_by_xpath(
+                ".//*[contains(text(), 'RIT') or contains(text(), 'POS')]"
+            )
+        )
+        != 0
         else False
     )
+
 
 def deal_with_bronze_items(d):
     items = retry_cmd(find_item_list, 0.2, 0, d, [])
