@@ -10,6 +10,7 @@ from view.snipe_screen import SnipeScreen
 from view.full_routine_screen import FullRoutineScreen
 from view.farm_bronze_pack_screen import BronzePackFarmScreen
 from model.utils import (
+    goto_packs,
     login,
     retry_cmd,
     goto_transfers,
@@ -68,6 +69,9 @@ def farm_bronze_packs():
         log([BronzePackFarmScreen], "Going to store")
         retry_cmd(goto_store, 1, 0, web_driver)
 
+        log([BronzePackFarmScreen], "Going to packs")
+        retry_cmd(goto_packs, 1, 0, web_driver)
+        
         log([BronzePackFarmScreen], "Going to bronze packs")
         retry_cmd(goto_bronze_packs, 0, 0, web_driver)
 

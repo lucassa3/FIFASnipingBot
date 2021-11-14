@@ -52,5 +52,5 @@ class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         NavBarComponent(master).grid(row=0, column=0)
-        tk.Label(self, text="Welcome to FIFA 21 Bot!").grid(row=1, column=0, pady=20)
+        tk.Label(self, text="Welcome to FIFA 22 Bot!").grid(row=1, column=0, pady=20)
         tk.Label(self, text="Made by Lucas Astur").grid(row=2, column=0, pady=20)

@@ -7,6 +7,8 @@ from controller.program_state import ProgramState
 def retry_cmd(cmd, sleep, timeout, *args):
     success = False
     start = time.time()
+    exc = ""
+    print(cmd.__name__)
     while not success:
         if ProgramState.stop_thread_flag:
             raise ValueError("Finalizando Thread")
@@ -14,9 +16,10 @@ def retry_cmd(cmd, sleep, timeout, *args):
         if timeout > 0:
             elapsed = time.time()
             if elapsed - start > timeout:
+                print(f"Exception: {exc}")
                 return "timeout"
 
-        res = try_cmd(cmd, *args)
+        res, exc = try_cmd(cmd, *args)
         if res != "exception":
             return res
         time.sleep(sleep)
@@ -24,11 +27,29 @@ def retry_cmd(cmd, sleep, timeout, *args):
 
 def retry_cmds(cmds, sleep, timeout, args_list):
     success = False
+    start = time.time()
+    exc = ""
+
+    print("retrying commands pack:")
+    for cmd in cmds:
+        print(cmd.__name__)
+
     while not success:
         for cmd, args in zip(cmds, args_list):
-            res = try_cmd(cmd, *args)
+            if ProgramState.stop_thread_flag:
+                raise ValueError("Finalizando Thread")
+
+            if timeout > 0:
+                elapsed = time.time()
+                if elapsed - start > timeout:
+                    print(f"Exception: {exc}")
+                    return "timeout"
+
+
+            res, exc = try_cmd(cmd, *args)
             if res != "exception":
                 return res
+
         time.sleep(sleep)
 
 
@@ -36,12 +57,12 @@ def try_cmd(cmd, *args):
     try:
         res = cmd(*args)
     except Exception as e:
-        print(cmd.__name__)
-        return "exception"
+        print(e)
+        return "exception", e
     else:
         if res != None:
-            return res
-        return cmd.__name__
+            return res, None
+        return cmd.__name__, None
 
 
 def find_click_login_btn(d):
@@ -100,8 +121,8 @@ def login(d, credentials):
                     if email.get_attribute("value") == "":
                         email.send_keys(cr[0])
                     password.send_keys(cr[1])
-
-                d.find_element_by_id("btnLogin").click()
+                time.sleep(2)
+                d.find_element_by_id("logInBtn").click()
 
             is_loading = check_if_loading(d)
             if is_loading:
@@ -128,6 +149,8 @@ def goto_transfers(d):
 def goto_store(d):
     d.find_element_by_class_name("icon-store").click()
 
+def goto_packs(d):
+    d.find_element_by_class_name("packs-tile").click()
 
 def get_tradepile_size(d):
     size = (
@@ -149,7 +172,7 @@ def goto_tradepile(d):
 
 def goto_bronze_packs(d):
     d.find_element_by_class_name("menu-container").find_element_by_xpath(
-        ".//*[contains(text(), 'BRONZE')]"
+        ".//*[contains(text(), 'PACOTES CLÁSSICOS')]"
     ).click()
 
 
@@ -443,6 +466,7 @@ def find_lowest_price(d, num_pages=3, good_price=600):
 
 def check_status_buy(d, idx_sel_card):
     status = None
+    # todo: cant stop thread while executing this
     while status is None:
         card_status = (
             d.find_element_by_class_name("paginated-item-list")
@@ -451,13 +475,14 @@ def check_status_buy(d, idx_sel_card):
             .get_attribute("class")
         )
 
-        if "expired" in card_status:
-            status = "expired"
-        elif "won" in card_status:
+        if "won" in card_status:
             status = "won"
 
-    return status
+        res = retry_cmd(has_already_bought, 0.1, 2, d)
+        if res != "timeout":
+            status = "expired"
 
+    return status
 
 def find_buy_btn(d):
     d.find_element_by_class_name("ui-layout-right").find_element_by_class_name(
@@ -587,9 +612,7 @@ def sell_duplicates_if_present(d):
 
 
 def store_remaining_cards_if_present(d):
-    d.find_element_by_xpath("//*[contains(text(), 'Itens')]").find_element_by_xpath(
-        ".."
-    ).find_element_by_class_name("call-to-action").click()
+    d.find_element_by_xpath("//*[contains(text(), 'Guardar tudo')]").click()
 
 
 def maybe_sell_item(d, card):
@@ -700,7 +723,7 @@ def buy_card(d, sell=True):
     if res == "find_buy_btn":
         idx = retry_cmd(select_buy_card, 0, 0, d)
         retry_cmd(find_click_buy_btn, 0, 0, d)
-        retry_cmd(confirm_dialog, 0, 0, d)
+        retry_cmd(confirm_dialog, 0, 10, d)
         time.sleep(1.6)
         status = check_status_buy(d, idx)
 
