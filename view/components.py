@@ -9,84 +9,54 @@ class NavBarComponent(tk.Frame):
         tk.Button(
             self,
             text="Sell Tradepile",
-            command=lambda: master.switch_frame("sell_screen"),
+            command=lambda: master.switch_frame("sell_page"),
         ).grid(row=0, column=0)
         tk.Button(
             self,
             text="Snipe Players",
-            command=lambda: master.switch_frame("snipe_screen"),
+            command=lambda: master.switch_frame("snipe_page"),
         ).grid(row=0, column=1)
         tk.Button(
             self,
-            text="Full Routine",
-            command=lambda: master.switch_frame("full_routine"),
-        ).grid(row=0, column=2)
-        tk.Button(
-            self,
             text="Farm Bronze Packs",
-            command=lambda: master.switch_frame("farm_bronze_pack_routine"),
-        ).grid(row=0, column=3)
+            command=lambda: master.switch_frame("farm_bronze_pack_page"),
+        ).grid(row=0, column=2)
 
 
 class StartStopComponent(tk.Frame):
     def __init__(
         self,
         master,
-        full_routine=False,
         start_button_label="Start",
         stop_button_label="Stop",
     ):
         tk.Frame.__init__(self, master)
 
-        if full_routine:
-            tk.Button(
-                self,
-                text="Sell and " + start_button_label,
-                fg="#48c732",
-                command=lambda: ps.State.switch_thread(routines.full_routine,
-                    {
-                        "alt_chem_styles": int(master.alt_chem_styles.get())
-                        if master.alt_chem_styles.get()
-                        else 0,
-                        "name": master.name.get(),
-                        "quality": master.quality.get(),
-                        "rarity": master.rarity.get(),
-                        "chem_style": master.chem_style.get(),
-                        "league": master.league.get(),
-                        "position": master.position.get(),
-                        "nation": master.nation.get(),
-                        "club": master.club.get(),
-                        "max_price": int(master.max_price.get())
-                        if master.max_price.get()
-                        else 0,
-                    }
-                ),
-            ).grid(row=0, column=0)
-        else:
-            tk.Button(
-                self,
-                text=start_button_label,
-                fg="#48c732",
-                command=lambda: ps.State.switch_thread(routines.snipe,
-                    {
-                        "alt_chem_styles": int(master.alt_chem_styles.get())
-                        if master.alt_chem_styles.get()
-                        else 0,
-                        "name": master.name.get(),
-                        "quality": master.quality.get(),
-                        "rarity": master.rarity.get(),
-                        "chem_style": master.chem_style.get(),
-                        "league": master.league.get(),
-                        "position": master.position.get(),
-                        "nation": master.nation.get(),
-                        "club": master.club.get(),
-                        "sell_player": master.lookup_sell_player_var.get(),
-                        "max_price": int(master.max_price.get())
-                        if master.max_price.get()
-                        else 0,
-                    }
-                ),
-            ).grid(row=0, column=0)
+        tk.Button(
+            self,
+            text=start_button_label,
+            fg="#48c732",
+            command=lambda: ps.State.switch_thread(
+                routines.snipe,
+                {
+                    "alt_chem_styles": int(master.alt_chem_styles.get())
+                    if master.alt_chem_styles.get()
+                    else 0,
+                    "name": master.name.get(),
+                    "quality": master.quality.get(),
+                    "rarity": master.rarity.get(),
+                    "chem_style": master.chem_style.get(),
+                    "league": master.league.get(),
+                    "position": master.position.get(),
+                    "nation": master.nation.get(),
+                    "club": master.club.get(),
+                    "sell_player": master.lookup_sell_player_var.get(),
+                    "max_price": int(master.max_price.get())
+                    if master.max_price.get()
+                    else 0,
+                },
+            ),
+        ).grid(row=0, column=0)
 
         tk.Button(
             self, text=stop_button_label, fg="#de190b", command=ps.State.stop_thread
@@ -103,7 +73,7 @@ class StatusTextComponent(tk.Frame):
 
 
 class SnipeFormComponent(tk.Frame):
-    def __init__(self, master, full_routine_form=False):
+    def __init__(self, master):
         tk.Frame.__init__(self, master)
 
         tk.Label(self, text="Name:").grid(row=0, column=0)
@@ -151,9 +121,7 @@ class SnipeFormComponent(tk.Frame):
         self.sell_player = tk.Checkbutton(self, variable=self.lookup_sell_player_var)
         self.sell_player.grid(row=5, column=1)
 
-        StartStopComponent(self, full_routine_form).grid(
-            row=9, column=0, columnspan=4, pady=20
-        )
+        StartStopComponent(self).grid(row=9, column=0, columnspan=4, pady=20)
 
         tk.Label(self, text="Status:").grid(row=10, column=0)
 

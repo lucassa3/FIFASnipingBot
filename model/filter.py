@@ -5,6 +5,7 @@ from model.actions import (
     cancel_filter,
 )
 
+
 class Filter:
     def __init__(
         self,

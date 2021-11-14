@@ -2,6 +2,7 @@ from typing import Tuple
 from state.program_state import State
 import time as t
 
+
 def retry(func, wait_time: int, limit: int, *args) -> Tuple[object, str, bool]:
     """Retries function call until not an exception or limit of time exceeded
 
@@ -36,7 +37,9 @@ def retry(func, wait_time: int, limit: int, *args) -> Tuple[object, str, bool]:
         t.sleep(wait_time)
 
 
-def retry_many(funcs, wait_time: int, limit: int, args_list) -> Tuple[object, str, bool]:
+def retry_many(
+    funcs, wait_time: int, limit: int, args_list
+) -> Tuple[object, str, bool]:
     """Retries array of function calls until not an exception or limit of time exceeded
 
     Parameters:

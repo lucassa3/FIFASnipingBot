@@ -1,7 +1,7 @@
 import threading
 import controller.routines as routines
 from state.program_state import State
-        
+
 if __name__ == "__main__":
     State.init_resources()
     routines.call_login("credentials.txt")

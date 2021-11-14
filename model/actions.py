@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from state.program_state import State
 from utils import retry as r
 
+
 def find_click_login_btn(d):
     btn = d.find_elements_by_class_name("call-to-action")
     if len(btn) > 0:
@@ -88,8 +89,10 @@ def goto_transfers(d):
 def goto_store(d):
     d.find_element_by_class_name("icon-store").click()
 
+
 def goto_packs(d):
     d.find_element_by_class_name("packs-tile").click()
+
 
 def get_tradepile_size(d):
     size = (
@@ -271,12 +274,12 @@ def select_playername_filter(d, name):
 
 
 def get_max_price_textbox(d):
-    fil = r.retry(find_textbox_filter, 0.02, 0, d, "Máx.:").get_attribute("value")[0]
+    fil = r.retry(find_textbox_filter, 0.02, 0, d, "Máx.:")[0].get_attribute("value")
     return int(fil.replace(".", "")) if fil != "" else 0
 
 
 def get_min_price_textbox(d):
-    fil = r.retry(find_textbox_filter, 0.02, 0, d, "Mín.:").get_attribute("value")[0]
+    fil = r.retry(find_textbox_filter, 0.02, 0, d, "Mín.:")[0].get_attribute("value")
     return int(fil.replace(".", "")) if fil != "" else 0
 
 
@@ -288,9 +291,7 @@ def cancel_filter(d, filter_name=""):
 
 def select_filter(d, filter_name="", value=""):
     r.retry(find_click_filter, 0.02, 0, d, filter_name)
-    r.retry(
-        d.find_element_by_xpath(f"//*[contains(text(), '{value}')]").click, 0.02, 0
-    )
+    r.retry(d.find_element_by_xpath(f"//*[contains(text(), '{value}')]").click, 0.02, 0)
 
 
 def select_textbox_filter(d, filter_name="", value=""):
@@ -394,7 +395,7 @@ def find_lowest_price(d, num_pages=3, good_price=600):
                 min_price = price
 
         if i != num_pages - 1:
-            if not(r.retry(find_click_next_btn, 0.2, 4, d)[2]):
+            if not (r.retry(find_click_next_btn, 0.2, 4, d)[2]):
                 break
 
     if min_price <= good_price:
@@ -421,6 +422,7 @@ def check_status_buy(d, idx_sel_card):
             status = "expired"
 
     return status
+
 
 def find_buy_btn(d):
     d.find_element_by_class_name("ui-layout-right").find_element_by_class_name(
@@ -632,10 +634,10 @@ def find_price_or_quit(d, num_pages=3, good_price=450):
                 return 0
 
         if i != num_pages - 1:
-            if not(r.retry(find_click_next_btn, 0.2, 4, d)[2]):
+            if not (r.retry(find_click_next_btn, 0.2, 4, d)[2]):
                 break
 
-        t.sleep(1.7)
+        t.sleep(1)
 
     if min_price <= good_price:
         return min_price
@@ -658,7 +660,7 @@ def already_in_club(d):
 
 def buy_card(d, sell=True):
     _, fname, _ = r.retry_many([find_buy_btn, find_no_results], 0, 0, [[d], [d]])
-    
+
     if fname == "find_buy_btn":
         idx = r.retry(select_buy_card, 0, 0, d)[0]
         r.retry(find_click_buy_btn, 0, 0, d)
