@@ -1,4 +1,4 @@
-from model.utils import (
+from model.actions import (
     select_textbox_filter,
     input_name,
     select_filter,

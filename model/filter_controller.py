@@ -1,9 +1,10 @@
-from model.utils import (
+from model.actions import (
     get_min_price_textbox,
-    retry_cmd,
     find_click_inc_min_price,
     find_click_dec_min_price,
 )
+
+from utils import retry as r
 
 
 class FilterController:
@@ -54,8 +55,8 @@ class FilterController:
             self.min_price_direction = "down"
 
         if self.min_price_direction == "up" and self.target_max_price != 200:
-            retry_cmd(find_click_inc_min_price, 0.02, 0, d)
+            r.retry(find_click_inc_min_price, 0.02, 0, d)
         elif self.min_price_direction == "down":
-            retry_cmd(find_click_dec_min_price, 0.02, 0, d)
+            r.retry(find_click_dec_min_price, 0.02, 0, d)
 
         cur_filter.update(d, **updated_filters)

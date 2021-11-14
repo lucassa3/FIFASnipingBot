@@ -1,9 +1,9 @@
 import threading
 import controller.routines as routines
-from controller.program_state import ProgramState
-        
+from state.program_state import State
+
 if __name__ == "__main__":
-    ProgramState.init_resources()
+    State.init_resources()
     routines.call_login("credentials.txt")
-    ProgramState.screen_controller.title("FIFA 21 Bot")
-    ProgramState.screen_controller.mainloop()
+    State.gui_instance.title("FIFA 22 Bot")
+    State.gui_instance.mainloop()

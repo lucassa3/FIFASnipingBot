@@ -106,3 +106,4 @@ venv.bak/
 credentials.txt
 profile/
 .vscode/
+chromedriver.exe
