@@ -1,7 +1,7 @@
 import tkinter as tk
 import controller.routines as routines
-import controller.program_state as ps
-from view.common_components import NavBarComponent, StatusTextComponent
+import state.program_state as ps
+from view.components import NavBarComponent, StatusTextComponent
 
 
 class SellScreen(tk.Frame):
@@ -22,8 +22,8 @@ class SellComponent(tk.Frame):
             self,
             text="Start",
             fg="#48c732",
-            command=lambda: ps.ProgramState.switch_thread(routines.sell_cards),
+            command=lambda: ps.State.switch_thread(routines.sell_cards),
         ).grid(row=0, column=0, pady=5)
-        tk.Button(self, text="Stop", fg="#de190b", command=ps.ProgramState.stop_thread).grid(
+        tk.Button(self, text="Stop", fg="#de190b", command=ps.State.stop_thread).grid(
             row=0, column=1
         )

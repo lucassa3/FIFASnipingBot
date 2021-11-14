@@ -1,10 +1,9 @@
-from model.utils import (
+from model.actions import (
     select_textbox_filter,
     input_name,
     select_filter,
     cancel_filter,
 )
-
 
 class Filter:
     def __init__(

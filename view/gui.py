@@ -3,10 +3,10 @@ from view.sell_screen import SellScreen
 from view.snipe_screen import SnipeScreen
 from view.full_routine_screen import FullRoutineScreen
 from view.farm_bronze_pack_screen import BronzePackFarmScreen
-from view.common_components import NavBarComponent
+from view.components import NavBarComponent
 
 
-class ScreenManager(tk.Tk):
+class GUI(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self._frame = None

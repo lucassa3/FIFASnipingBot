@@ -1,5 +1,5 @@
 import tkinter as tk
-from view.common_components import NavBarComponent, SnipeFormComponent
+from view.components import NavBarComponent, SnipeFormComponent
 
 
 class FullRoutineScreen(tk.Frame):
